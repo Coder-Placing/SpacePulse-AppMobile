@@ -57,3 +57,15 @@ data class CreateSpaceRequest(
     val hasIot: Boolean,
     val images: List<String>
 )
+
+data class IoTDeviceResponse(
+    val id: Long,
+    val spaceId: Long,
+    val type: String,
+    val name: String,
+    val serialNumber: String
+)
+
+data class NotificationResponse(
+    val id: Long?
+)

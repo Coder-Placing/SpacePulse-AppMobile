@@ -158,7 +158,7 @@ fun DetalleEspacioScreen(navController: NavController, spaceViewModel: SpaceView
                 OutlinedButton(onClick = { }, modifier = Modifier.weight(1f).height(80.dp), shape = RoundedCornerShape(8.dp), border = BorderStroke(1.dp, Color(0xFFE0E0E0))) {
                     Text("Avance", color = darkBlue, fontWeight = FontWeight.Bold)
                 }
-                OutlinedButton(onClick = { }, modifier = Modifier.weight(1f).height(80.dp), shape = RoundedCornerShape(8.dp), border = BorderStroke(1.dp, Color(0xFFE0E0E0))) {
+                OutlinedButton(onClick = { navController.navigate("monitoreoEspacio/$spaceId") }, modifier = Modifier.weight(1f).height(80.dp), shape = RoundedCornerShape(8.dp), border = BorderStroke(1.dp, Color(0xFFE0E0E0))) {
                     Text("Monitoreo", color = darkBlue, fontWeight = FontWeight.Bold)
                 }
             }

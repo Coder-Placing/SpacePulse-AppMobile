@@ -3,6 +3,8 @@ package com.example.spacepulse.viewmodel
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.spacepulse.model.beans.CreateSpaceRequest
+import com.example.spacepulse.model.beans.IoTDeviceResponse
+import com.example.spacepulse.model.beans.NotificationResponse
 import com.example.spacepulse.model.beans.SpaceResponse
 import com.example.spacepulse.model.client.RetrofitClient
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -13,6 +15,12 @@ class SpaceViewModel : ViewModel() {
 
     private val _spaces = MutableStateFlow<List<SpaceResponse>>(emptyList())
     val spaces: StateFlow<List<SpaceResponse>> = _spaces
+
+    private val _iotDevices = MutableStateFlow<List<IoTDeviceResponse>>(emptyList())
+    val iotDevices: StateFlow<List<IoTDeviceResponse>> = _iotDevices
+
+    private val _notifications = MutableStateFlow<List<NotificationResponse>>(emptyList())
+    val notifications: StateFlow<List<NotificationResponse>> = _notifications
 
     private val _createSpaceState = MutableStateFlow<Result<String>?>(null)
     val createSpaceState: StateFlow<Result<String>?> = _createSpaceState
@@ -29,6 +37,36 @@ class SpaceViewModel : ViewModel() {
                     _spaces.value = allSpaces.filter { it.homeownerId == userId }
                 }
             } catch (e: Exception) {
+            }
+        }
+    }
+
+    fun fetchIoTDevices(token: String, spaceId: Long) {
+        viewModelScope.launch {
+            try {
+                val response = RetrofitClient.webService.getIoTDevicesBySpace("Bearer $token", spaceId)
+                if (response.isSuccessful) {
+                    _iotDevices.value = response.body() ?: emptyList()
+                } else {
+                    _iotDevices.value = emptyList()
+                }
+            } catch (e: Exception) {
+                _iotDevices.value = emptyList()
+            }
+        }
+    }
+
+    fun fetchNotifications(token: String) {
+        viewModelScope.launch {
+            try {
+                val response = RetrofitClient.webService.getUserNotifications("Bearer $token")
+                if (response.isSuccessful) {
+                    _notifications.value = response.body() ?: emptyList()
+                } else {
+                    _notifications.value = emptyList()
+                }
+            } catch (e: Exception) {
+                _notifications.value = emptyList()
             }
         }
     }

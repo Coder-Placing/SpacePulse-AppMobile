@@ -1,8 +1,10 @@
 package com.example.spacepulse.model.response
 
 import com.example.spacepulse.model.beans.CreateSpaceRequest
+import com.example.spacepulse.model.beans.IoTDeviceResponse
 import com.example.spacepulse.model.beans.LoginRequest
 import com.example.spacepulse.model.beans.LoginResponse
+import com.example.spacepulse.model.beans.NotificationResponse
 import com.example.spacepulse.model.beans.RegisterRequest
 import com.example.spacepulse.model.beans.RegisterResponse
 import com.example.spacepulse.model.beans.SpaceResponse
@@ -29,4 +31,10 @@ interface WebService {
 
     @DELETE("api/v1/space/{id}")
     suspend fun deleteSpace(@Header("Authorization") token: String, @Path("id") id: Long): Response<Unit>
+
+    @GET("api/v1/monitoring/io-t-devices/space/{spaceId}")
+    suspend fun getIoTDevicesBySpace(@Header("Authorization") token: String, @Path("spaceId") spaceId: Long): Response<List<IoTDeviceResponse>>
+
+    @GET("api/v1/monitoring/notifications/user")
+    suspend fun getUserNotifications(@Header("Authorization") token: String): Response<List<NotificationResponse>>
 }

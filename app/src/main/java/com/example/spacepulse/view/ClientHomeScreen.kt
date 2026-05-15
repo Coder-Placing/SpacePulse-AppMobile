@@ -37,7 +37,7 @@ fun ClientHomeScreen(navController: NavController, viewModel: AuthViewModel, spa
         ) {
             when (selectedItem) {
                 0 -> if (isDashboard) DashboardView() else EspaciosView(navController, spaceViewModel)
-                1 -> { isDashboard = false; MonitoreoView() }
+                1 -> { isDashboard = false; MonitoreoView(spaceViewModel) }
                 2 -> { isDashboard = false; PagosView() }
                 3 -> { isDashboard = false; ReportesView() }
                 4 -> { isDashboard = false; PerfilView(navController, viewModel) }
@@ -48,7 +48,7 @@ fun ClientHomeScreen(navController: NavController, viewModel: AuthViewModel, spa
 
 @Composable
 fun SpacePulseBottomNavigation(selectedColor: Color, selectedItem: Int, onItemSelected: (Int) -> Unit) {
-    val items = listOf("Espacios", "Monitoreo", "Pagos", "Reportes", "Perfil")
+    val items = listOf("Espacios", "Alertas", "Pagos", "Reportes", "Perfil")
     val icons = listOf(Icons.Filled.Home, Icons.Filled.Notifications, Icons.Filled.ShoppingCart, Icons.Filled.Description, Icons.Filled.Person)
 
     NavigationBar(

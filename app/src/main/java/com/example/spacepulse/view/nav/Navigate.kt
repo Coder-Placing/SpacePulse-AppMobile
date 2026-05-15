@@ -10,6 +10,7 @@ import com.example.spacepulse.view.CrearEspacioScreen
 import com.example.spacepulse.view.DetalleEspacioScreen
 import com.example.spacepulse.view.EditarPerfilScreen
 import com.example.spacepulse.view.LoginScreen
+import com.example.spacepulse.view.MonitoreoEspacioScreen
 import com.example.spacepulse.view.RegisterScreen
 import com.example.spacepulse.viewmodel.AuthViewModel
 import com.example.spacepulse.viewmodel.SpaceViewModel
@@ -39,6 +40,10 @@ fun AppNavigation() {
         composable("detalleEspacio/{spaceId}") { backStackEntry ->
             val spaceId = backStackEntry.arguments?.getString("spaceId")?.toLongOrNull() ?: 0L
             DetalleEspacioScreen(navController = navController, spaceViewModel = spaceViewModel, spaceId = spaceId)
+        }
+        composable("monitoreoEspacio/{spaceId}") { backStackEntry ->
+            val spaceId = backStackEntry.arguments?.getString("spaceId")?.toLongOrNull() ?: 0L
+            MonitoreoEspacioScreen(navController = navController, spaceViewModel = spaceViewModel, spaceId = spaceId)
         }
     }
 }
