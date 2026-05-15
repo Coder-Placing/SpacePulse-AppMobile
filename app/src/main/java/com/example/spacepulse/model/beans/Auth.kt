@@ -31,6 +31,31 @@ data class RegisterResponse(
     val createdAt: String?
 )
 
+data class PaymentMethodResponse(
+    val id: String,
+    val type: String,
+    val number: String,
+    val expiry: String,
+    val cvv: String
+)
+
+data class UserProfileResponse(
+    val id: String,
+    val fullName: String,
+    val email: String,
+    val phone: String?,
+    val role: String,
+    val photo: String?,
+    val paymentMethods: List<PaymentMethodResponse>
+)
+
+data class AddPaymentMethodRequest(
+    val type: String,
+    val number: String,
+    val expiry: String,
+    val cvv: String
+)
+
 data class SpaceResponse(
     val id: Long,
     val title: String,

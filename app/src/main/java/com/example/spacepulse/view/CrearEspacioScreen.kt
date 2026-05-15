@@ -1,6 +1,7 @@
 package com.example.spacepulse.view
 
 import android.content.Context
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -31,15 +32,22 @@ fun CrearEspacioScreen(navController: NavController, spaceViewModel: SpaceViewMo
     var title by remember { mutableStateOf("") }
     var description by remember { mutableStateOf("") }
     var location by remember { mutableStateOf("") }
-    var spaceType by remember { mutableStateOf("") }
     var area by remember { mutableStateOf("") }
     var budget by remember { mutableStateOf("") }
-    var currency by remember { mutableStateOf("") }
 
+    val currencies = listOf("PEN", "USD", "EUR")
+    var currency by remember { mutableStateOf(currencies[0]) }
+    var expandedCurrency by remember { mutableStateOf(false) }
+
+    var isLoading by remember { mutableStateOf(false) }
     var showIncompleteDialog by remember { mutableStateOf(false) }
+
     val createState by spaceViewModel.createSpaceState.collectAsState()
 
     LaunchedEffect(createState) {
+        if (createState != null) {
+            isLoading = false
+        }
         if (createState?.isSuccess == true) {
             spaceViewModel.resetStates()
             navController.popBackStack()
@@ -111,18 +119,11 @@ fun CrearEspacioScreen(navController: NavController, spaceViewModel: SpaceViewMo
             )
             Spacer(modifier = Modifier.height(16.dp))
 
-            Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(16.dp)) {
-                OutlinedTextField(
-                    value = spaceType, onValueChange = { spaceType = it },
-                    label = { Text("Tipo de espacio") },
-                    modifier = Modifier.weight(1f), shape = RoundedCornerShape(8.dp)
-                )
-                OutlinedTextField(
-                    value = area, onValueChange = { area = it },
-                    label = { Text("Área m2") },
-                    modifier = Modifier.weight(1f), shape = RoundedCornerShape(8.dp)
-                )
-            }
+            OutlinedTextField(
+                value = area, onValueChange = { area = it },
+                label = { Text("Área m2") },
+                modifier = Modifier.fillMaxWidth(), shape = RoundedCornerShape(8.dp)
+            )
             Spacer(modifier = Modifier.height(16.dp))
 
             Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(16.dp)) {
@@ -131,25 +132,52 @@ fun CrearEspacioScreen(navController: NavController, spaceViewModel: SpaceViewMo
                     label = { Text("Presupuesto estimado") },
                     modifier = Modifier.weight(1f), shape = RoundedCornerShape(8.dp)
                 )
-                OutlinedTextField(
-                    value = currency, onValueChange = { currency = it },
-                    label = { Text("Moneda") },
-                    modifier = Modifier.weight(1f), shape = RoundedCornerShape(8.dp)
-                )
+
+                ExposedDropdownMenuBox(
+                    expanded = expandedCurrency,
+                    onExpandedChange = { expandedCurrency = !expandedCurrency },
+                    modifier = Modifier.weight(1f)
+                ) {
+                    OutlinedTextField(
+                        value = currency,
+                        onValueChange = {},
+                        readOnly = true,
+                        label = { Text("Moneda") },
+                        trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = expandedCurrency) },
+                        modifier = Modifier.menuAnchor().fillMaxWidth(),
+                        shape = RoundedCornerShape(8.dp)
+                    )
+                    ExposedDropdownMenu(
+                        expanded = expandedCurrency,
+                        onDismissRequest = { expandedCurrency = false },
+                        modifier = Modifier.background(Color.White)
+                    ) {
+                        currencies.forEach { selection ->
+                            DropdownMenuItem(
+                                text = { Text(selection) },
+                                onClick = {
+                                    currency = selection
+                                    expandedCurrency = false
+                                }
+                            )
+                        }
+                    }
+                }
             }
             Spacer(modifier = Modifier.height(32.dp))
 
             Button(
                 onClick = {
-                    if (title.isEmpty() || description.isEmpty() || location.isEmpty() || spaceType.isEmpty() || area.isEmpty() || budget.isEmpty() || currency.isEmpty()) {
+                    if (title.isEmpty() || description.isEmpty() || location.isEmpty() || area.isEmpty() || budget.isEmpty()) {
                         showIncompleteDialog = true
                     } else {
+                        isLoading = true
                         val request = CreateSpaceRequest(
                             homeownerId = userId,
                             title = title,
                             description = description,
                             location = location,
-                            spaceType = spaceType,
+                            spaceType = "0",
                             dimensionsSquareMeters = area.toDoubleOrNull() ?: 0.0,
                             estimatedBudget = budget.toDoubleOrNull() ?: 0.0,
                             currency = currency,
@@ -161,9 +189,14 @@ fun CrearEspacioScreen(navController: NavController, spaceViewModel: SpaceViewMo
                 },
                 modifier = Modifier.fillMaxWidth().height(54.dp),
                 shape = RoundedCornerShape(8.dp),
-                colors = ButtonDefaults.buttonColors(containerColor = darkBlue)
+                colors = ButtonDefaults.buttonColors(containerColor = darkBlue),
+                enabled = !isLoading
             ) {
-                Text("Continuar", fontSize = 18.sp, color = Color.White)
+                if (isLoading) {
+                    CircularProgressIndicator(color = Color.White, modifier = Modifier.size(24.dp), strokeWidth = 2.dp)
+                } else {
+                    Text("Continuar", fontSize = 18.sp, color = Color.White)
+                }
             }
         }
     }

@@ -1,5 +1,6 @@
 package com.example.spacepulse.view
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
@@ -8,11 +9,13 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import com.example.spacepulse.R
 import com.example.spacepulse.viewmodel.AuthViewModel
 
 @Composable
@@ -20,6 +23,7 @@ fun LoginScreen(navController: NavController, viewModel: AuthViewModel) {
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
     var showErrorDialog by remember { mutableStateOf(false) }
+    var isLoading by remember { mutableStateOf(false) }
 
     val context = LocalContext.current
     val loginState by viewModel.loginState.collectAsState()
@@ -27,6 +31,9 @@ fun LoginScreen(navController: NavController, viewModel: AuthViewModel) {
     val darkBlue = Color(0xFF2C3E50)
 
     LaunchedEffect(loginState) {
+        if (loginState != null) {
+            isLoading = false
+        }
         if (loginState?.isSuccess == true) {
             navController.navigate("clientHome") {
                 popUpTo("login") { inclusive = true }
@@ -40,7 +47,7 @@ fun LoginScreen(navController: NavController, viewModel: AuthViewModel) {
         AlertDialog(
             onDismissRequest = {
                 showErrorDialog = false
-                viewModel.resetLoginState()
+                viewModel.resetStates()
             },
             title = {
                 Text("No se pudo ingresar", fontWeight = FontWeight.Bold, fontSize = 20.sp, color = darkBlue)
@@ -52,7 +59,7 @@ fun LoginScreen(navController: NavController, viewModel: AuthViewModel) {
                 Button(
                     onClick = {
                         showErrorDialog = false
-                        viewModel.resetLoginState()
+                        viewModel.resetStates()
                     },
                     modifier = Modifier.fillMaxWidth().height(48.dp),
                     shape = RoundedCornerShape(8.dp),
@@ -73,6 +80,13 @@ fun LoginScreen(navController: NavController, viewModel: AuthViewModel) {
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
     ) {
+        Image(
+            painter = painterResource(id = R.drawable.space_pulse_icon),
+            contentDescription = null,
+            modifier = Modifier.size(120.dp)
+        )
+
+        Spacer(modifier = Modifier.height(16.dp))
 
         Text(text = "SpacePulse", style = MaterialTheme.typography.headlineLarge, fontWeight = FontWeight.Bold)
         Spacer(modifier = Modifier.height(48.dp))
@@ -105,12 +119,20 @@ fun LoginScreen(navController: NavController, viewModel: AuthViewModel) {
         Spacer(modifier = Modifier.height(32.dp))
 
         Button(
-            onClick = { viewModel.login(email, password, context) },
+            onClick = {
+                isLoading = true
+                viewModel.login(email, password, context)
+            },
             modifier = Modifier.fillMaxWidth().height(54.dp),
             shape = RoundedCornerShape(8.dp),
-            colors = ButtonDefaults.buttonColors(containerColor = darkBlue)
+            colors = ButtonDefaults.buttonColors(containerColor = darkBlue),
+            enabled = !isLoading
         ) {
-            Text("Iniciar sesión", fontSize = 18.sp, color = Color.White)
+            if (isLoading) {
+                CircularProgressIndicator(color = Color.White, modifier = Modifier.size(24.dp), strokeWidth = 2.dp)
+            } else {
+                Text("Iniciar sesión", fontSize = 18.sp, color = Color.White)
+            }
         }
 
         Spacer(modifier = Modifier.height(24.dp))

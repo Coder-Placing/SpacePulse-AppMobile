@@ -3,8 +3,7 @@ package com.example.spacepulse.viewmodel
 import android.content.Context
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.spacepulse.model.beans.LoginRequest
-import com.example.spacepulse.model.beans.RegisterRequest
+import com.example.spacepulse.model.beans.*
 import com.example.spacepulse.model.client.RetrofitClient
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -17,6 +16,12 @@ class AuthViewModel : ViewModel() {
 
     private val _registerState = MutableStateFlow<Result<String>?>(null)
     val registerState: StateFlow<Result<String>?> = _registerState
+
+    private val _userProfile = MutableStateFlow<UserProfileResponse?>(null)
+    val userProfile: StateFlow<UserProfileResponse?> = _userProfile
+
+    private val _paymentState = MutableStateFlow<Result<String>?>(null)
+    val paymentState: StateFlow<Result<String>?> = _paymentState
 
     fun login(email: String, password: String, context: Context) {
         viewModelScope.launch {
@@ -55,10 +60,37 @@ class AuthViewModel : ViewModel() {
                 if (response.isSuccessful && response.body() != null) {
                     _registerState.value = Result.success("Registro exitoso")
                 } else {
-                    _registerState.value = Result.failure(Exception("Error al registrar: Verifica los datos"))
+                    _registerState.value = Result.failure(Exception("Error al registrar"))
                 }
             } catch (e: Exception) {
                 _registerState.value = Result.failure(e)
+            }
+        }
+    }
+
+    fun fetchProfile(token: String, userId: String) {
+        viewModelScope.launch {
+            try {
+                val response = RetrofitClient.webService.getUserProfile("Bearer $token", userId)
+                if (response.isSuccessful) {
+                    _userProfile.value = response.body()
+                }
+            } catch (e: Exception) {}
+        }
+    }
+
+    fun addPaymentMethod(token: String, userId: String, request: AddPaymentMethodRequest) {
+        viewModelScope.launch {
+            try {
+                val response = RetrofitClient.webService.addPaymentMethod("Bearer $token", userId, request)
+                if (response.isSuccessful) {
+                    _paymentState.value = Result.success("Pago agregado")
+                    fetchProfile(token, userId)
+                } else {
+                    _paymentState.value = Result.failure(Exception("Error al agregar pago"))
+                }
+            } catch (e: Exception) {
+                _paymentState.value = Result.failure(e)
             }
         }
     }
@@ -70,8 +102,12 @@ class AuthViewModel : ViewModel() {
             apply()
         }
         _loginState.value = null
+        _userProfile.value = null
     }
 
-    fun resetLoginState() { _loginState.value = null }
-    fun resetRegisterState() { _registerState.value = null }
+    fun resetStates() {
+        _loginState.value = null
+        _registerState.value = null
+        _paymentState.value = null
+    }
 }

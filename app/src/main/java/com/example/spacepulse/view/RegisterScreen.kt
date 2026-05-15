@@ -24,6 +24,7 @@ fun RegisterScreen(navController: NavController, viewModel: AuthViewModel) {
     var phone by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
     var confirmPassword by remember { mutableStateOf("") }
+    var isLoading by remember { mutableStateOf(false) }
 
     val roles = listOf("Homeowner", "Remodeler")
     var selectedRole by remember { mutableStateOf(roles[0]) }
@@ -32,8 +33,11 @@ fun RegisterScreen(navController: NavController, viewModel: AuthViewModel) {
     val darkBlue = Color(0xFF2C3E50)
 
     LaunchedEffect(registerState) {
+        if (registerState != null) {
+            isLoading = false
+        }
         if (registerState?.isSuccess == true) {
-            viewModel.resetRegisterState()
+            viewModel.resetStates()
             navController.navigate("login") {
                 popUpTo("register") { inclusive = true }
             }
@@ -109,6 +113,7 @@ fun RegisterScreen(navController: NavController, viewModel: AuthViewModel) {
         Button(
             onClick = {
                 if (password == confirmPassword) {
+                    isLoading = true
                     val request = RegisterRequest(
                         email = email, password = password, fullName = fullName,
                         phone = phone, role = selectedRole, photo = "placeholder_url"
@@ -118,9 +123,14 @@ fun RegisterScreen(navController: NavController, viewModel: AuthViewModel) {
             },
             modifier = Modifier.fillMaxWidth().height(54.dp),
             shape = RoundedCornerShape(8.dp),
-            colors = ButtonDefaults.buttonColors(containerColor = darkBlue)
+            colors = ButtonDefaults.buttonColors(containerColor = darkBlue),
+            enabled = !isLoading
         ) {
-            Text("Registrarme", fontSize = 18.sp, color = Color.White)
+            if (isLoading) {
+                CircularProgressIndicator(color = Color.White, modifier = Modifier.size(24.dp), strokeWidth = 2.dp)
+            } else {
+                Text("Registrarme", fontSize = 18.sp, color = Color.White)
+            }
         }
 
         if (registerState?.isFailure == true) {

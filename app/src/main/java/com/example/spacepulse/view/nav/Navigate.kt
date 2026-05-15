@@ -5,13 +5,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import com.example.spacepulse.view.ClientHomeScreen
-import com.example.spacepulse.view.CrearEspacioScreen
-import com.example.spacepulse.view.DetalleEspacioScreen
-import com.example.spacepulse.view.EditarPerfilScreen
-import com.example.spacepulse.view.LoginScreen
-import com.example.spacepulse.view.MonitoreoEspacioScreen
-import com.example.spacepulse.view.RegisterScreen
+import com.example.spacepulse.view.*
 import com.example.spacepulse.viewmodel.AuthViewModel
 import com.example.spacepulse.viewmodel.SpaceViewModel
 
@@ -33,6 +27,15 @@ fun AppNavigation() {
         }
         composable("editarPerfil") {
             EditarPerfilScreen(navController = navController)
+        }
+        composable("metodosPago") {
+            MetodosPagoScreen(navController = navController, viewModel = authViewModel)
+        }
+        composable("agregarPago") {
+            AgregarPagoScreen(navController = navController, viewModel = authViewModel)
+        }
+        composable("configuracion") {
+            ConfiguracionScreen(navController = navController)
         }
         composable("crearEspacio") {
             CrearEspacioScreen(navController = navController, spaceViewModel = spaceViewModel)

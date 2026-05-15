@@ -25,7 +25,7 @@ fun ClientHomeScreen(navController: NavController, viewModel: AuthViewModel, spa
         bottomBar = {
             SpacePulseBottomNavigation(darkBlue, selectedItem) {
                 selectedItem = it
-                if (it == 0) isDashboard = false
+                isDashboard = false
             }
         },
         containerColor = Color.White
@@ -36,11 +36,18 @@ fun ClientHomeScreen(navController: NavController, viewModel: AuthViewModel, spa
                 .padding(paddingValues)
         ) {
             when (selectedItem) {
-                0 -> if (isDashboard) DashboardView() else EspaciosView(navController, spaceViewModel)
-                1 -> { isDashboard = false; MonitoreoView(spaceViewModel) }
-                2 -> { isDashboard = false; PagosView() }
-                3 -> { isDashboard = false; ReportesView() }
-                4 -> { isDashboard = false; PerfilView(navController, viewModel) }
+                0 -> if (isDashboard) {
+                    DashboardView(navController, spaceViewModel) {
+                        selectedItem = it
+                        isDashboard = false
+                    }
+                } else {
+                    EspaciosView(navController, spaceViewModel)
+                }
+                1 -> MonitoreoView(spaceViewModel)
+                2 -> PagosView()
+                3 -> ReportesView()
+                4 -> PerfilView(navController, viewModel)
             }
         }
     }

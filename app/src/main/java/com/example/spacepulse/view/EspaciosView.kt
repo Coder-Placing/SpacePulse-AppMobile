@@ -37,6 +37,11 @@ fun EspaciosView(navController: NavController, spaceViewModel: SpaceViewModel) {
 
     val spaces by spaceViewModel.spaces.collectAsState()
 
+    val filteredSpaces = spaces.filter {
+        it.title.contains(searchQuery, ignoreCase = true) ||
+                it.location.contains(searchQuery, ignoreCase = true)
+    }
+
     LaunchedEffect(Unit) {
         if (token.isNotEmpty() && userId.isNotEmpty()) {
             spaceViewModel.fetchSpaces(token, userId)
@@ -117,7 +122,7 @@ fun EspaciosView(navController: NavController, spaceViewModel: SpaceViewModel) {
             }
         } else {
             LazyColumn(modifier = Modifier.fillMaxSize()) {
-                items(spaces) { space ->
+                items(filteredSpaces) { space ->
                     Card(
                         shape = RoundedCornerShape(8.dp),
                         border = BorderStroke(1.dp, Color(0xFFE0E0E0)),

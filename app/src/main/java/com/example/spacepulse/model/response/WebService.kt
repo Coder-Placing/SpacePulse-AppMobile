@@ -1,20 +1,8 @@
 package com.example.spacepulse.model.response
 
-import com.example.spacepulse.model.beans.CreateSpaceRequest
-import com.example.spacepulse.model.beans.IoTDeviceResponse
-import com.example.spacepulse.model.beans.LoginRequest
-import com.example.spacepulse.model.beans.LoginResponse
-import com.example.spacepulse.model.beans.NotificationResponse
-import com.example.spacepulse.model.beans.RegisterRequest
-import com.example.spacepulse.model.beans.RegisterResponse
-import com.example.spacepulse.model.beans.SpaceResponse
+import com.example.spacepulse.model.beans.*
 import retrofit2.Response
-import retrofit2.http.Body
-import retrofit2.http.DELETE
-import retrofit2.http.GET
-import retrofit2.http.Header
-import retrofit2.http.POST
-import retrofit2.http.Path
+import retrofit2.http.*
 
 interface WebService {
     @POST("api/users/login")
@@ -22,6 +10,12 @@ interface WebService {
 
     @POST("api/users/register")
     suspend fun register(@Body request: RegisterRequest): Response<RegisterResponse>
+
+    @GET("api/users/{userId}")
+    suspend fun getUserProfile(@Header("Authorization") token: String, @Path("userId") userId: String): Response<UserProfileResponse>
+
+    @POST("api/users/{userId}/payment-methods")
+    suspend fun addPaymentMethod(@Header("Authorization") token: String, @Path("userId") userId: String, @Body request: AddPaymentMethodRequest): Response<UserProfileResponse>
 
     @GET("api/v1/space")
     suspend fun getSpaces(@Header("Authorization") token: String): Response<List<SpaceResponse>>
