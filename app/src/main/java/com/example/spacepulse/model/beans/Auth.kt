@@ -94,3 +94,25 @@ data class IoTDeviceResponse(
 data class NotificationResponse(
     val id: Long?
 )
+
+data class TaskRequest(
+    val spaceId: Long,
+    val title: String,
+    val description: String,
+    val photoUrl: String
+)
+
+data class TaskResponse(
+    val id: Long,
+    val spaceId: Long,
+    val title: String,
+    val description: String,
+    val photoUrl: String,
+    val status: String
+)
+
+data class UpdateTaskContentRequest(
+    val title: String,
+    val description: String,
+    val photoUrl: String = ""
+)

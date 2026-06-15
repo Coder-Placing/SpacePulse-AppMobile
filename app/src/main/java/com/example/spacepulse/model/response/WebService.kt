@@ -31,4 +31,27 @@ interface WebService {
 
     @GET("api/v1/monitoring/notifications/user")
     suspend fun getUserNotifications(@Header("Authorization") token: String): Response<List<NotificationResponse>>
+    @POST("api/v1/monitoring/tasks/request")
+    suspend fun requestTask(@Header("Authorization") token: String, @Body request: com.example.spacepulse.model.beans.TaskRequest): retrofit2.Response<com.example.spacepulse.model.beans.TaskResponse>
+
+    @GET("api/v1/monitoring/tasks/space/{spaceId}")
+    suspend fun getTasksBySpaceId(
+        @Header("Authorization") token: String,
+        @Path("spaceId") spaceId: Long
+    ): Response<List<TaskResponse>>
+    // Para eliminar la tarea
+    @DELETE("api/v1/monitoring/tasks/{id}")
+    suspend fun deleteWorkItem(
+        @Header("Authorization") token: String,
+        @Path("id") id: Long
+    ): retrofit2.Response<Unit>
+
+    // Para editar el contenido de la tarea
+    @PUT("api/v1/monitoring/tasks/{id}/content")
+    suspend fun updateTaskContent(
+        @Header("Authorization") token: String,
+        @Path("id") id: Long,
+        @Body resource: UpdateTaskContentRequest
+    ): retrofit2.Response<com.example.spacepulse.model.beans.TaskResponse>
+
 }

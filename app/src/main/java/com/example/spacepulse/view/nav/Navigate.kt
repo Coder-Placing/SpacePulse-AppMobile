@@ -48,5 +48,24 @@ fun AppNavigation() {
             val spaceId = backStackEntry.arguments?.getString("spaceId")?.toLongOrNull() ?: 0L
             MonitoreoEspacioScreen(navController = navController, spaceViewModel = spaceViewModel, spaceId = spaceId)
         }
+        composable("solicitarTarea/{spaceId}") { backStackEntry ->
+            val id = backStackEntry.arguments?.getString("spaceId")?.toLongOrNull() ?: 0L
+            com.example.spacepulse.view.SolicitarTareaScreen(
+                navController = navController,
+                spaceViewModel = spaceViewModel,
+                spaceId = id
+            )
+        }
+
+        composable("tareasEspacio/{spaceId}") { backStackEntry ->
+            // Lo extraemos como Long para que encaje perfecto
+            val spaceId = backStackEntry.arguments?.getString("spaceId")?.toLongOrNull() ?: 0L
+
+            TareasEspacioScreen(
+                spaceId = spaceId,
+                viewModel = spaceViewModel,
+                onBack = { navController.popBackStack() }
+            )
+        }
     }
 }

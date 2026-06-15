@@ -1,17 +1,30 @@
 package com.example.spacepulse.viewmodel
 
+
+
+
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.spacepulse.model.beans.CreateSpaceRequest
 import com.example.spacepulse.model.beans.IoTDeviceResponse
 import com.example.spacepulse.model.beans.NotificationResponse
 import com.example.spacepulse.model.beans.SpaceResponse
+import com.example.spacepulse.model.beans.TaskRequest
+import com.example.spacepulse.model.beans.TaskResponse
 import com.example.spacepulse.model.client.RetrofitClient
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 
 class SpaceViewModel : ViewModel() {
+
+    private val _tasksList = MutableStateFlow<List<TaskResponse>>(emptyList())
+    val tasksList: StateFlow<List<TaskResponse>> = _tasksList.asStateFlow()
+
+    private val _isLoadingTasks = MutableStateFlow(false)
+    val isLoadingTasks: StateFlow<Boolean> = _isLoadingTasks.asStateFlow()
+
 
     private val _spaces = MutableStateFlow<List<SpaceResponse>>(emptyList())
     val spaces: StateFlow<List<SpaceResponse>> = _spaces
@@ -107,4 +120,70 @@ class SpaceViewModel : ViewModel() {
         _createSpaceState.value = null
         _deleteSpaceState.value = null
     }
+
+    fun requestTask(token: String, request: TaskRequest, onComplete: () -> Unit) {
+        viewModelScope.launch {
+            try {
+                val response = RetrofitClient.webService.requestTask("Bearer $token", request)
+                if (response.isSuccessful) {
+                    onComplete()
+                } else {
+                    onComplete()
+                }
+            } catch (e: Exception) {
+                e.printStackTrace()
+                onComplete()
+            }
+        }
+    }
+
+    fun getTasksForSpace(token: String, spaceId: Long) {
+        viewModelScope.launch {
+            _isLoadingTasks.value = true
+            try {
+                val response = RetrofitClient.webService.getTasksBySpaceId("Bearer $token", spaceId)
+                if (response.isSuccessful) {
+                    _tasksList.value = response.body() ?: emptyList()
+                } else {
+                    android.util.Log.e("TASKS", "Error del servidor: ${response.code()}")
+                }
+            } catch (e: Exception) {
+                android.util.Log.e("TASKS", "Fallo de conexión: ${e.message}")
+            } finally {
+                _isLoadingTasks.value = false
+            }
+        }
+    }
+
+    fun deleteModelTask(token: String, taskId: Long, spaceId: Long) {
+        viewModelScope.launch {
+            try {
+                val response = RetrofitClient.webService.deleteWorkItem("Bearer $token", taskId)
+                if (response.isSuccessful) {
+                    getTasksForSpace(token, spaceId)
+                } else {
+                    android.util.Log.e("TASKS", "Error al eliminar: ${response.code()}")
+                }
+            } catch (e: Exception) {
+                android.util.Log.e("TASKS", "Fallo al eliminar: ${e.message}")
+            }
+        }
+    }
+
+    fun updateModelTask(token: String, taskId: Long, title: String, description: String, spaceId: Long) {
+        viewModelScope.launch {
+            try {
+                val request = com.example.spacepulse.model.beans.UpdateTaskContentRequest(title, description, "")
+                val response = RetrofitClient.webService.updateTaskContent("Bearer $token", taskId, request)
+                if (response.isSuccessful) {
+                    getTasksForSpace(token, spaceId)
+                } else {
+                    android.util.Log.e("TASKS", "Error al editar: ${response.code()}")
+                }
+            } catch (e: Exception) {
+                android.util.Log.e("TASKS", "Fallo al editar: ${e.message}")
+            }
+        }
+    }
+
 }
