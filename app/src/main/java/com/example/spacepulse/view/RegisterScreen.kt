@@ -26,9 +26,6 @@ fun RegisterScreen(navController: NavController, viewModel: AuthViewModel) {
     var confirmPassword by remember { mutableStateOf("") }
     var isLoading by remember { mutableStateOf(false) }
 
-    val roles = listOf("Homeowner", "Remodeler")
-    var selectedRole by remember { mutableStateOf(roles[0]) }
-
     val registerState by viewModel.registerState.collectAsState()
     val darkBlue = Color(0xFF2C3E50)
 
@@ -89,25 +86,6 @@ fun RegisterScreen(navController: NavController, viewModel: AuthViewModel) {
             visualTransformation = PasswordVisualTransformation(),
             modifier = Modifier.fillMaxWidth(), shape = RoundedCornerShape(8.dp)
         )
-        Spacer(modifier = Modifier.height(16.dp))
-
-        Text("¿Cómo usarás SpacePulse?", fontWeight = FontWeight.Medium, color = darkBlue)
-        Row(
-            modifier = Modifier.fillMaxWidth().padding(vertical = 8.dp),
-            horizontalArrangement = Arrangement.SpaceAround
-        ) {
-            roles.forEach { role ->
-                Row(verticalAlignment = Alignment.CenterVertically) {
-                    RadioButton(
-                        selected = (role == selectedRole),
-                        onClick = { selectedRole = role },
-                        colors = RadioButtonDefaults.colors(selectedColor = darkBlue)
-                    )
-                    Text(text = if(role == "Homeowner") "Cliente" else "Remodelador")
-                }
-            }
-        }
-
         Spacer(modifier = Modifier.height(24.dp))
 
         Button(
@@ -116,7 +94,7 @@ fun RegisterScreen(navController: NavController, viewModel: AuthViewModel) {
                     isLoading = true
                     val request = RegisterRequest(
                         email = email, password = password, fullName = fullName,
-                        phone = phone, role = selectedRole, photo = "placeholder_url"
+                        phone = phone, role = "Homeowner", photo = "placeholder_url"
                     )
                     viewModel.register(request)
                 }
