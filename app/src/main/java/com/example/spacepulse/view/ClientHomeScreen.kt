@@ -44,8 +44,8 @@ fun ClientHomeScreen(navController: NavController, viewModel: AuthViewModel, spa
                 } else {
                     EspaciosView(navController, spaceViewModel)
                 }
-                1 -> MonitoreoView(spaceViewModel)
-                2 -> PagosView()
+                1 -> MonitoreoView(navController, spaceViewModel)
+                2 -> IoTDevicesView(navController, spaceViewModel)
                 3 -> ReportesView()
                 4 -> PerfilView(navController, viewModel)
             }
@@ -55,8 +55,8 @@ fun ClientHomeScreen(navController: NavController, viewModel: AuthViewModel, spa
 
 @Composable
 fun SpacePulseBottomNavigation(selectedColor: Color, selectedItem: Int, onItemSelected: (Int) -> Unit) {
-    val items = listOf("Espacios", "Alertas", "Pagos", "Reportes", "Perfil")
-    val icons = listOf(Icons.Filled.Home, Icons.Filled.Notifications, Icons.Filled.ShoppingCart, Icons.Filled.Description, Icons.Filled.Person)
+    val items = listOf("Espacios", "Alertas", "IoT", "Reportes", "Perfil")
+    val icons = listOf(Icons.Filled.Home, Icons.Filled.Notifications, Icons.Filled.Router, Icons.Filled.Description, Icons.Filled.Person)
 
     NavigationBar(
         containerColor = Color.White,

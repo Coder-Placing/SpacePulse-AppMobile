@@ -26,8 +26,26 @@ interface WebService {
     @DELETE("api/v1/space/{id}")
     suspend fun deleteSpace(@Header("Authorization") token: String, @Path("id") id: Long): Response<Unit>
 
-    @GET("api/v1/monitoring/io-t-devices/space/{spaceId}")
+    @PUT("api/v1/space/{id}")
+    suspend fun updateSpace(@Header("Authorization") token: String, @Path("id") id: Long, @Body request: UpdateSpaceRequest): Response<SpaceResponse>
+
+    @GET("api/v1/monitoring/readings/space/{spaceId}")
     suspend fun getIoTDevicesBySpace(@Header("Authorization") token: String, @Path("spaceId") spaceId: Long): Response<List<IoTDeviceResponse>>
+
+    @POST("api/v1/monitoring/io-t-devices")
+    suspend fun addIoTDevice(@Header("Authorization") token: String, @Body request: CreateIoTDeviceRequest): Response<IoTDeviceResponse>
+
+    @PUT("api/v1/monitoring/io-t-devices/{deviceId}")
+    suspend fun updateIoTDevice(@Header("Authorization") token: String, @Path("deviceId") deviceId: Long, @Body request: UpdateIoTDeviceRequest): Response<IoTDeviceResponse>
+
+    @PUT("api/v1/monitoring/io-t-devices/{deviceId}/toggle")
+    suspend fun toggleIoTDevice(@Header("Authorization") token: String, @Path("deviceId") deviceId: Long): Response<Unit>
+
+    @GET("api/v1/monitoring/io-t-devices/my-devices")
+    suspend fun getMyIoTDevices(@Header("Authorization") token: String): Response<List<IoTDeviceResponse>>
+
+    @DELETE("api/v1/monitoring/io-t-devices/{id}")
+    suspend fun deleteIoTDevice(@Header("Authorization") token: String, @Path("id") id: Long): Response<Unit>
 
     @GET("api/v1/monitoring/notifications/user")
     suspend fun getUserNotifications(@Header("Authorization") token: String): Response<List<NotificationResponse>>

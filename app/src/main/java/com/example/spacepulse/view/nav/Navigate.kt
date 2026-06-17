@@ -48,6 +48,14 @@ fun AppNavigation() {
             val spaceId = backStackEntry.arguments?.getString("spaceId")?.toLongOrNull() ?: 0L
             MonitoreoEspacioScreen(navController = navController, spaceViewModel = spaceViewModel, spaceId = spaceId)
         }
+        composable("agregarIoTDevice/{spaceId}") { backStackEntry ->
+            val spaceId = backStackEntry.arguments?.getString("spaceId")?.toLongOrNull() ?: 0L
+            AgregarIoTDeviceScreen(navController = navController, spaceViewModel = spaceViewModel, spaceId = spaceId)
+        }
+        composable("detalleIoTDevice/{deviceId}") { backStackEntry ->
+            val deviceId = backStackEntry.arguments?.getString("deviceId")?.toLongOrNull() ?: 0L
+            DetalleIoTDeviceScreen(navController = navController, spaceViewModel = spaceViewModel, deviceId = deviceId)
+        }
         composable("solicitarTarea/{spaceId}") { backStackEntry ->
             val id = backStackEntry.arguments?.getString("spaceId")?.toLongOrNull() ?: 0L
             com.example.spacepulse.view.SolicitarTareaScreen(

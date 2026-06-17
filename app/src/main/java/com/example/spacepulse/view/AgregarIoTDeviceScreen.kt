@@ -211,10 +211,10 @@ fun AgregarIoTDeviceScreen(navController: NavController, spaceViewModel: SpaceVi
                         type = selectedType,
                         name = name,
                         serialNumber = serialNumber,
-                        customMetricName = customMetricName,
-                        customUnit = customUnit,
-                        customMinThreshold = customMinThreshold.toDoubleOrNull() ?: 0.0,
-                        customMaxThreshold = customMaxThreshold.toDoubleOrNull() ?: 0.0
+                        metricName = customMetricName,
+                        unit = customUnit,
+                        minThreshold = customMinThreshold.toDoubleOrNull() ?: 0.0,
+                        maxThreshold = customMaxThreshold.toDoubleOrNull() ?: 0.0
                     )
                     spaceViewModel.addIoTDevice(token, request)
                 },
@@ -231,7 +231,7 @@ fun AgregarIoTDeviceScreen(navController: NavController, spaceViewModel: SpaceVi
             }
 
             if (addState?.isFailure == true) {
-                Text(text = "Error al guardar el dispositivo", color = MaterialTheme.colorScheme.error, modifier = Modifier.padding(top = 8.dp))
+                Text(text = addState?.exceptionOrNull()?.message ?: "Error al guardar el dispositivo", color = MaterialTheme.colorScheme.error, modifier = Modifier.padding(top = 8.dp))
             }
         }
     }

@@ -33,7 +33,8 @@ fun DetalleIoTDeviceScreen(navController: NavController, spaceViewModel: SpaceVi
     val token = sharedPref.getString("USER_TOKEN", "") ?: ""
 
     val iotDevices by spaceViewModel.iotDevices.collectAsState()
-    val device = iotDevices.find { it.id == deviceId }
+    val myDevices by spaceViewModel.myIoTDevices.collectAsState()
+    val device = iotDevices.find { it.id == deviceId } ?: myDevices.find { it.id == deviceId }
 
     var showEditDialog by remember { mutableStateOf(false) }
     var showDeleteDialog by remember { mutableStateOf(false) }
@@ -43,6 +44,13 @@ fun DetalleIoTDeviceScreen(navController: NavController, spaceViewModel: SpaceVi
 
     val updateState by spaceViewModel.updateIoTDeviceState.collectAsState()
     val deleteState by spaceViewModel.deleteIoTDeviceState.collectAsState()
+
+    LaunchedEffect(device?.spaceId) {
+        val sId = device?.spaceId
+        if (sId != null && token.isNotEmpty()) {
+            spaceViewModel.fetchIoTDevices(token, sId)
+        }
+    }
 
     LaunchedEffect(updateState) {
         if (updateState?.isSuccess == true) {
@@ -167,7 +175,7 @@ fun DetalleIoTDeviceScreen(navController: NavController, spaceViewModel: SpaceVi
                                 Text(text = "S/N: ${device.serialNumber}", color = Color.Gray, fontSize = 14.sp)
                             }
                             Switch(
-                                checked = device.isActive,
+                                checked = device.isOn,
                                 onCheckedChange = { spaceViewModel.toggleIoTDevice(token, deviceId, device.spaceId) },
                                 colors = SwitchDefaults.colors(checkedThumbColor = Color.White, checkedTrackColor = darkBlue)
                             )
@@ -183,14 +191,14 @@ fun DetalleIoTDeviceScreen(navController: NavController, spaceViewModel: SpaceVi
                 Text(text = "Métricas Configuradas", fontWeight = FontWeight.Bold, fontSize = 18.sp, color = darkBlue)
                 Spacer(modifier = Modifier.height(16.dp))
 
-                InfoRow(label = "Métrica", value = device.customMetricName ?: "N/A")
-                InfoRow(label = "Unidad", value = device.customUnit ?: "N/A")
-                InfoRow(label = "Umbral Mínimo", value = device.customMinThreshold?.toString() ?: "N/A")
-                InfoRow(label = "Umbral Máximo", value = device.customMaxThreshold?.toString() ?: "N/A")
+                InfoRow(label = "Métrica", value = device.metricName ?: "N/A")
+                InfoRow(label = "Unidad", value = device.unit ?: "N/A")
+                InfoRow(label = "Umbral Mínimo", value = device.minThreshold?.toString() ?: "N/A")
+                InfoRow(label = "Umbral Máximo", value = device.maxThreshold?.toString() ?: "N/A")
                 
                 Spacer(modifier = Modifier.height(32.dp))
                 
-                if (device.isActive) {
+                if (device.isOn) {
                     Card(
                         shape = RoundedCornerShape(8.dp),
                         colors = CardDefaults.cardColors(containerColor = Color(0xFFE8F5E9)),

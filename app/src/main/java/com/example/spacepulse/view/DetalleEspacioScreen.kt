@@ -44,6 +44,17 @@ fun DetalleEspacioScreen(navController: NavController, spaceViewModel: SpaceView
         }
     }
 
+    val tasksList by spaceViewModel.tasksList.collectAsState()
+    LaunchedEffect(spaceId) {
+        if (token.isNotEmpty()) {
+            spaceViewModel.getTasksForSpace(token, spaceId)
+        }
+    }
+
+    val completadas = tasksList.count { it.status.equals("COMPLETED", ignoreCase = true) || it.status.equals("Completada", ignoreCase = true) }
+    val enProceso = tasksList.count { it.status.equals("IN_PROGRESS", ignoreCase = true) || it.status.equals("En proceso", ignoreCase = true) }
+    val pendientes = tasksList.count { it.status.equals("PENDING", ignoreCase = true) || it.status.equals("Pendiente", ignoreCase = true) }
+
     if (showDeleteDialog) {
         AlertDialog(
             onDismissRequest = { showDeleteDialog = false },
@@ -140,13 +151,13 @@ fun DetalleEspacioScreen(navController: NavController, spaceViewModel: SpaceView
             Spacer(modifier = Modifier.height(12.dp))
             Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                 OutlinedButton(onClick = {}, shape = RoundedCornerShape(20.dp), border = BorderStroke(1.dp, Color(0xFF27AE60)), contentPadding = PaddingValues(horizontal = 12.dp)) {
-                    Text("0 completadas", color = Color.DarkGray, fontSize = 12.sp)
+                    Text("$completadas completadas", color = Color.DarkGray, fontSize = 12.sp)
                 }
                 OutlinedButton(onClick = {}, shape = RoundedCornerShape(20.dp), border = BorderStroke(1.dp, darkBlue), contentPadding = PaddingValues(horizontal = 12.dp)) {
-                    Text("1 en proceso", color = Color.DarkGray, fontSize = 12.sp)
+                    Text("$enProceso en proceso", color = Color.DarkGray, fontSize = 12.sp)
                 }
                 OutlinedButton(onClick = {}, shape = RoundedCornerShape(20.dp), border = BorderStroke(1.dp, Color(0xFFD68910)), contentPadding = PaddingValues(horizontal = 12.dp)) {
-                    Text("1 pendiente", color = Color.DarkGray, fontSize = 12.sp)
+                    Text("$pendientes pendiente${if (pendientes != 1) "s" else ""}", color = Color.DarkGray, fontSize = 12.sp)
                 }
             }
 
@@ -163,13 +174,8 @@ fun DetalleEspacioScreen(navController: NavController, spaceViewModel: SpaceView
                 }
             }
             Spacer(modifier = Modifier.height(12.dp))
-            Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-                OutlinedButton(onClick = { }, modifier = Modifier.weight(1f).height(80.dp), shape = RoundedCornerShape(8.dp), border = BorderStroke(1.dp, Color(0xFFE0E0E0))) {
-                    Text("Pagos", color = darkBlue, fontWeight = FontWeight.Bold)
-                }
-                OutlinedButton(onClick = { }, modifier = Modifier.weight(1f).height(80.dp), shape = RoundedCornerShape(8.dp), border = BorderStroke(1.dp, Color(0xFFE0E0E0))) {
-                    Text("Reportes", color = darkBlue, fontWeight = FontWeight.Bold)
-                }
+            OutlinedButton(onClick = { }, modifier = Modifier.fillMaxWidth().height(80.dp), shape = RoundedCornerShape(8.dp), border = BorderStroke(1.dp, Color(0xFFE0E0E0))) {
+                Text("Reportes", color = darkBlue, fontWeight = FontWeight.Bold)
             }
 
             // --- ¡AQUÍ ESTÁ SU LUGAR CORRECTO! DENTRO DE LA COLUMNA PRINCIPAL ---
