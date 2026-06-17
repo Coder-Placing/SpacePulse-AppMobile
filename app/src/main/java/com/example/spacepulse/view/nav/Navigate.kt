@@ -66,7 +66,6 @@ fun AppNavigation() {
         }
 
         composable("tareasEspacio/{spaceId}") { backStackEntry ->
-            // Lo extraemos como Long para que encaje perfecto
             val spaceId = backStackEntry.arguments?.getString("spaceId")?.toLongOrNull() ?: 0L
 
             TareasEspacioScreen(

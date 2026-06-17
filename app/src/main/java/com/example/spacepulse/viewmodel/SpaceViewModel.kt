@@ -3,12 +3,15 @@ package com.example.spacepulse.viewmodel
 
 
 
+import android.content.Context
+import android.net.Uri
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.spacepulse.model.beans.CreateIoTDeviceRequest
 import com.example.spacepulse.model.beans.CreateSpaceRequest
 import com.example.spacepulse.model.beans.IoTDeviceResponse
 import com.example.spacepulse.model.beans.NotificationResponse
+import com.example.spacepulse.model.beans.RegisterRequest
 import com.example.spacepulse.model.beans.SpaceResponse
 import com.example.spacepulse.model.beans.TaskRequest
 import com.example.spacepulse.model.beans.TaskResponse
@@ -170,15 +173,26 @@ class SpaceViewModel : ViewModel() {
         }
     }
 
-    fun createSpace(token: String, userId: String, request: CreateSpaceRequest) {
+    fun createSpace(context: Context, imageUri: Uri?, token: String, userId: String, request: CreateSpaceRequest) {
         viewModelScope.launch {
             try {
-                val response = RetrofitClient.webService.createSpace("Bearer $token", request)
+                val photoUrl = if (imageUri != null) {
+                    ImgBBUploader.uploadPhoto(context, imageUri) ?: ""
+                } else {
+                    ""
+                }
+
+                val imagesList = if (photoUrl.isNotEmpty()) listOf(photoUrl) else emptyList()
+
+                val finalRequest = request.copy(images = imagesList)
+
+                val response = RetrofitClient.webService.createSpace("Bearer $token", finalRequest)
+
                 if (response.isSuccessful) {
                     _createSpaceState.value = Result.success("Espacio creado")
                     fetchSpaces(token, userId)
                 } else {
-                    _createSpaceState.value = Result.failure(Exception("Error al crear"))
+                    _createSpaceState.value = Result.failure(Exception("Error al crear: ${response.code()}"))
                 }
             } catch (e: Exception) {
                 _createSpaceState.value = Result.failure(e)
@@ -300,4 +314,33 @@ class SpaceViewModel : ViewModel() {
         }
     }
 
+    fun registerUser(context: Context, imageUri: Uri?, email: String, pass: String, name: String, phone: String) {
+        viewModelScope.launch {
+            val photoUrl = if (imageUri != null) {
+                ImgBBUploader.uploadPhoto(context, imageUri) ?: ""
+            } else {
+                ""
+            }
+
+            val registerRequest = RegisterRequest(
+                email = email,
+                password = pass,
+                fullName = name,
+                phone = phone,
+                role = "Homeowner",
+                photo = photoUrl
+            )
+
+            try {
+                val response = RetrofitClient.webService.register(registerRequest)
+            } catch (e: Exception) {
+            }
+        }
+
+
+
+    }
 }
+
+
+

@@ -19,13 +19,11 @@ import com.example.spacepulse.viewmodel.SpaceViewModel
 fun ClientHomeScreen(navController: NavController, viewModel: AuthViewModel, spaceViewModel: SpaceViewModel) {
     val darkBlue = Color(0xFF2C3E50)
     var selectedItem by rememberSaveable { mutableIntStateOf(0) }
-    var isDashboard by rememberSaveable { mutableStateOf(true) }
 
     Scaffold(
         bottomBar = {
-            SpacePulseBottomNavigation(darkBlue, selectedItem) {
-                selectedItem = it
-                isDashboard = false
+            SpacePulseBottomNavigation(darkBlue, selectedItem) { index ->
+                selectedItem = index
             }
         },
         containerColor = Color.White
@@ -46,7 +44,12 @@ fun ClientHomeScreen(navController: NavController, viewModel: AuthViewModel, spa
                 }
                 1 -> MonitoreoView(navController, spaceViewModel)
                 2 -> IoTDevicesView(navController, spaceViewModel)
-                3 -> ReportesView()
+                3 -> DashboardView(
+                    navController = navController,
+                    spaceViewModel = spaceViewModel,
+                    authViewModel = viewModel,
+                    onTabSelected = { selectedItem = it }
+                )
                 4 -> PerfilView(navController, viewModel)
             }
         }
@@ -55,8 +58,8 @@ fun ClientHomeScreen(navController: NavController, viewModel: AuthViewModel, spa
 
 @Composable
 fun SpacePulseBottomNavigation(selectedColor: Color, selectedItem: Int, onItemSelected: (Int) -> Unit) {
-    val items = listOf("Espacios", "Alertas", "IoT", "Reportes", "Perfil")
-    val icons = listOf(Icons.Filled.Home, Icons.Filled.Notifications, Icons.Filled.Router, Icons.Filled.Description, Icons.Filled.Person)
+    val items = listOf("Espacios", "Alertas", "IoT", "Dashboard", "Perfil")
+    val icons = listOf(Icons.Filled.Home, Icons.Filled.Notifications, Icons.Filled.Router, Icons.Filled.Dashboard, Icons.Filled.Person)
 
     NavigationBar(
         containerColor = Color.White,

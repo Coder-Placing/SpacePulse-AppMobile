@@ -1,6 +1,7 @@
 package com.example.spacepulse.model.response
 
 import com.example.spacepulse.model.beans.*
+import okhttp3.MultipartBody
 import retrofit2.Response
 import retrofit2.http.*
 
@@ -57,19 +58,22 @@ interface WebService {
         @Header("Authorization") token: String,
         @Path("spaceId") spaceId: Long
     ): Response<List<TaskResponse>>
-    // Para eliminar la tarea
     @DELETE("api/v1/monitoring/tasks/{id}")
     suspend fun deleteWorkItem(
         @Header("Authorization") token: String,
         @Path("id") id: Long
     ): retrofit2.Response<Unit>
 
-    // Para editar el contenido de la tarea
     @PUT("api/v1/monitoring/tasks/{id}/content")
     suspend fun updateTaskContent(
         @Header("Authorization") token: String,
         @Path("id") id: Long,
         @Body resource: UpdateTaskContentRequest
     ): retrofit2.Response<com.example.spacepulse.model.beans.TaskResponse>
-
+    @Multipart
+    @POST("https://api.imgbb.com/1/upload")
+    suspend fun uploadImageToImgBB(
+        @Query("key") apiKey: String,
+        @Part image: MultipartBody.Part
+    ): retrofit2.Response<com.example.spacepulse.model.beans.ImgBBResponse>
 }

@@ -190,16 +190,14 @@ fun DetalleEspacioScreen(navController: NavController, spaceViewModel: SpaceView
             ) {
                 Text("Solicitar Nueva Tarea", fontSize = 16.sp, color = Color.White)
             }
-            Spacer(modifier = Modifier.height(8.dp)) // Un pequeño espacio para separarlo del botón anterior
+            Spacer(modifier = Modifier.height(8.dp))
 
             Button(
                 onClick = {
-                    // Dirige a nuestra nueva pantalla de lista
                     navController.navigate("tareasEspacio/$spaceId")
                 },
                 modifier = Modifier.fillMaxWidth().height(50.dp),
                 shape = RoundedCornerShape(8.dp),
-                // Puedes usar el mismo azul oscuro que usaste en SolicitarTareaScreen
                 colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF2C3E50))
             ) {
                 Text("Ver Lista de Tareas", fontSize = 16.sp, color = Color.White)
