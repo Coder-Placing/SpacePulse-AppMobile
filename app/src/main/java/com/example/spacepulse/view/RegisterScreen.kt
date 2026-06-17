@@ -1,9 +1,5 @@
 package com.example.spacepulse.view
 
-import android.net.Uri
-import androidx.activity.compose.rememberLauncherForActivityResult
-import androidx.activity.result.PickVisualMediaRequest
-import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -13,7 +9,6 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
@@ -31,9 +26,6 @@ fun RegisterScreen(navController: NavController, viewModel: AuthViewModel) {
     var confirmPassword by remember { mutableStateOf("") }
     var isLoading by remember { mutableStateOf(false) }
 
-    val roles = listOf("Homeowner", "Remodeler")
-    var selectedRole by remember { mutableStateOf(roles[0]) }
-
     val registerState by viewModel.registerState.collectAsState()
     val darkBlue = Color(0xFF2C3E50)
 
@@ -49,16 +41,6 @@ fun RegisterScreen(navController: NavController, viewModel: AuthViewModel) {
         }
     }
 
-    val context = LocalContext.current
-    var selectedImageUri by remember { mutableStateOf<Uri?>(null) }
-
-    // Este es el "lanzador" que abre la galería de Android
-    val galleryLauncher = rememberLauncherForActivityResult(
-        contract = ActivityResultContracts.PickVisualMedia()
-    ) { uri ->
-        selectedImageUri = uri
-    }
-
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -68,17 +50,6 @@ fun RegisterScreen(navController: NavController, viewModel: AuthViewModel) {
     ) {
         Text(text = "Crear cuenta", fontSize = 32.sp, fontWeight = FontWeight.Bold, color = darkBlue)
         Spacer(modifier = Modifier.height(24.dp))
-
-        // Botón de subir foto
-        Button(
-            onClick = {
-                galleryLauncher.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly))
-            },
-            colors = ButtonDefaults.buttonColors(containerColor = if (selectedImageUri != null) Color(0xFF4CAF50) else darkBlue)
-        ) {
-            Text(if (selectedImageUri != null) "¡Foto seleccionada! ✓" else "Seleccionar Foto de Perfil")
-        }
-        Spacer(modifier = Modifier.height(12.dp))
 
         OutlinedTextField(
             value = fullName, onValueChange = { fullName = it },
@@ -115,42 +86,17 @@ fun RegisterScreen(navController: NavController, viewModel: AuthViewModel) {
             visualTransformation = PasswordVisualTransformation(),
             modifier = Modifier.fillMaxWidth(), shape = RoundedCornerShape(8.dp)
         )
-        Spacer(modifier = Modifier.height(16.dp))
-
-        Text("¿Cómo usarás SpacePulse?", fontWeight = FontWeight.Medium, color = darkBlue)
-        Row(
-            modifier = Modifier.fillMaxWidth().padding(vertical = 8.dp),
-            horizontalArrangement = Arrangement.SpaceAround
-        ) {
-            roles.forEach { role ->
-                Row(verticalAlignment = Alignment.CenterVertically) {
-                    RadioButton(
-                        selected = (role == selectedRole),
-                        onClick = { selectedRole = role },
-                        colors = RadioButtonDefaults.colors(selectedColor = darkBlue)
-                    )
-                    Text(text = if(role == "Homeowner") "Cliente" else "Remodelador")
-                }
-            }
-        }
-
         Spacer(modifier = Modifier.height(24.dp))
 
-        // BOTÓN FINAL ACTUALIZADO
         Button(
             onClick = {
                 if (password == confirmPassword) {
                     isLoading = true
-                    // Usamos la nueva función conectada a ImgBB
-                    viewModel.registerUser(
-                        context = context,
-                        imageUri = selectedImageUri,
-                        email = email,
-                        pass = password,
-                        name = fullName,
-                        phone = phone,
-                        role = selectedRole
+                    val request = RegisterRequest(
+                        email = email, password = password, fullName = fullName,
+                        phone = phone, role = "Homeowner", photo = "placeholder_url"
                     )
+                    viewModel.register(request)
                 }
             },
             modifier = Modifier.fillMaxWidth().height(54.dp),
