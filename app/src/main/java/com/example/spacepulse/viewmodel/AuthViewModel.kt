@@ -1,12 +1,12 @@
 package com.example.spacepulse.viewmodel
 
 import android.content.Context
-import android.net.Uri // <-- Nuevo import necesario
+import android.net.Uri
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.spacepulse.model.beans.*
 import com.example.spacepulse.model.client.RetrofitClient
-import com.example.spacepulse.viewmodel.ImgBBUploader // <-- Ajusta la ruta si pusiste el archivo en otra carpeta
+import com.example.spacepulse.viewmodel.ImgBBUploader
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
@@ -69,19 +69,18 @@ class AuthViewModel : ViewModel() {
                 ""
             }
 
-            // 2. Armamos el JSON con la URL final y el ROL que viene de la vista
             val registerRequest = RegisterRequest(
                 email = email,
                 password = pass,
                 fullName = name,
                 phone = phone,
-                role = role, // <--- Ahora toma el rol dinámico (Homeowner o Remodeler)
+                role = role,
                 photo = photoUrl
             )
 
-            // 3. Enviamos a tu backend en .NET
             try {
                 val response = RetrofitClient.webService.register(registerRequest)
+
                 if (response.isSuccessful && response.body() != null) {
                     _registerState.value = Result.success("Registro exitoso")
                 } else {

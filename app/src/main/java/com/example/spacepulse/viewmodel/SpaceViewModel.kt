@@ -90,20 +90,16 @@ class SpaceViewModel : ViewModel() {
     fun createSpace(context: Context, imageUri: Uri?, token: String, userId: String, request: CreateSpaceRequest) {
         viewModelScope.launch {
             try {
-                // 1. Subir la imagen a ImgBB
                 val photoUrl = if (imageUri != null) {
                     ImgBBUploader.uploadPhoto(context, imageUri) ?: ""
                 } else {
                     ""
                 }
 
-                // 2. Actualizamos la lista 'images' con el resultado
-                // Si la lista está vacía, enviamos una lista con la URL. Si no, puedes decidir cómo manejarlo.
                 val imagesList = if (photoUrl.isNotEmpty()) listOf(photoUrl) else emptyList()
 
                 val finalRequest = request.copy(images = imagesList)
 
-                // 3. Enviamos al servidor
                 val response = RetrofitClient.webService.createSpace("Bearer $token", finalRequest)
 
                 if (response.isSuccessful) {
@@ -206,29 +202,24 @@ class SpaceViewModel : ViewModel() {
 
     fun registerUser(context: Context, imageUri: Uri?, email: String, pass: String, name: String, phone: String) {
         viewModelScope.launch {
-            // 1. Llamamos a nuestra herramienta compartida para obtener la URL
             val photoUrl = if (imageUri != null) {
                 ImgBBUploader.uploadPhoto(context, imageUri) ?: ""
             } else {
                 ""
             }
 
-            // 2. Armamos el JSON con la URL final
             val registerRequest = RegisterRequest(
                 email = email,
                 password = pass,
                 fullName = name,
                 phone = phone,
                 role = "Homeowner",
-                photo = photoUrl // Inyectamos la URL
+                photo = photoUrl
             )
 
-            // 3. Enviamos a tu backend en .NET
             try {
                 val response = RetrofitClient.webService.register(registerRequest)
-                // manejar éxito o error...
             } catch (e: Exception) {
-                // manejar excepción...
             }
         }
 

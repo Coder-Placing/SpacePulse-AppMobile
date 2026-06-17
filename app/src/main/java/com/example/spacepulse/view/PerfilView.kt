@@ -12,7 +12,7 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.KeyboardArrowRight
 import androidx.compose.material3.*
-import androidx.compose.runtime.* // Importante para LaunchedEffect y collectAsState
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -24,6 +24,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import coil.compose.AsyncImage
+import coil.request.CachePolicy
+import coil.request.ImageRequest
 import com.example.spacepulse.viewmodel.AuthViewModel
 
 @Composable
@@ -32,17 +34,14 @@ fun PerfilView(navController: NavController, viewModel: AuthViewModel) {
     val darkBlue = Color(0xFF2C3E50)
     val lightBackground = Color(0xFFE5E7E9)
 
-    // 1. Escuchamos los datos del perfil que vienen del ViewModel
     val userProfile by viewModel.userProfile.collectAsState()
 
-    // 2. Traemos tus datos guardados localmente
     val sharedPref = context.getSharedPreferences("SpacePulsePrefs", Context.MODE_PRIVATE)
     val fullName = sharedPref.getString("USER_FULL_NAME", "Usuario") ?: "Usuario"
     val email = sharedPref.getString("USER_EMAIL", "correo@email.com") ?: "correo@email.com"
     val token = sharedPref.getString("USER_TOKEN", "") ?: ""
     val userId = sharedPref.getString("USER_ID", "") ?: ""
 
-    // 3. Apenas cargue la pantalla, le pedimos al backend los datos completos (para que traiga la foto)
     LaunchedEffect(Unit) {
         if (token.isNotEmpty() && userId.isNotEmpty()) {
             viewModel.fetchProfile(token, userId)
@@ -60,10 +59,15 @@ fun PerfilView(navController: NavController, viewModel: AuthViewModel) {
 
                 Box(modifier = Modifier.size(60.dp).background(Color.LightGray, shape = CircleShape), contentAlignment = Alignment.Center) {
                     AsyncImage(
-                        model = userProfile?.photo, // Ahora sí reconocerá la foto
+                        model = ImageRequest.Builder(LocalContext.current)
+                            .data(userProfile?.photo)
+                            .memoryCachePolicy(CachePolicy.DISABLED)
+                            .diskCachePolicy(CachePolicy.DISABLED)
+                            .crossfade(true)
+                            .build(),
                         contentDescription = "Foto de perfil",
                         modifier = Modifier
-                            .size(60.dp) // Mismo tamaño que el Box
+                            .size(60.dp)
                             .clip(CircleShape),
                         contentScale = ContentScale.Crop
                     )

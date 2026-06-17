@@ -19,13 +19,11 @@ import com.example.spacepulse.viewmodel.SpaceViewModel
 fun ClientHomeScreen(navController: NavController, viewModel: AuthViewModel, spaceViewModel: SpaceViewModel) {
     val darkBlue = Color(0xFF2C3E50)
     var selectedItem by rememberSaveable { mutableIntStateOf(0) }
-    var isDashboard by rememberSaveable { mutableStateOf(true) }
 
     Scaffold(
         bottomBar = {
-            SpacePulseBottomNavigation(darkBlue, selectedItem) {
-                selectedItem = it
-                isDashboard = false
+            SpacePulseBottomNavigation(darkBlue, selectedItem) { index ->
+                selectedItem = index
             }
         },
         containerColor = Color.White
@@ -36,17 +34,15 @@ fun ClientHomeScreen(navController: NavController, viewModel: AuthViewModel, spa
                 .padding(paddingValues)
         ) {
             when (selectedItem) {
-                0 -> if (isDashboard) {
-                    DashboardView(navController, spaceViewModel) {
-                        selectedItem = it
-                        isDashboard = false
-                    }
-                } else {
-                    EspaciosView(navController, spaceViewModel)
-                }
+                0 -> EspaciosView(navController, spaceViewModel)
                 1 -> MonitoreoView(spaceViewModel)
                 2 -> PagosView()
-                3 -> ReportesView()
+                3 -> DashboardView(
+                    navController = navController,
+                    spaceViewModel = spaceViewModel,
+                    authViewModel = viewModel,
+                    onTabSelected = { selectedItem = it }
+                )
                 4 -> PerfilView(navController, viewModel)
             }
         }
@@ -55,8 +51,14 @@ fun ClientHomeScreen(navController: NavController, viewModel: AuthViewModel, spa
 
 @Composable
 fun SpacePulseBottomNavigation(selectedColor: Color, selectedItem: Int, onItemSelected: (Int) -> Unit) {
-    val items = listOf("Espacios", "Alertas", "Pagos", "Reportes", "Perfil")
-    val icons = listOf(Icons.Filled.Home, Icons.Filled.Notifications, Icons.Filled.ShoppingCart, Icons.Filled.Description, Icons.Filled.Person)
+    val items = listOf("Espacios", "Alertas", "Pagos", "Dashboard", "Perfil")
+    val icons = listOf(
+        Icons.Filled.Home,
+        Icons.Filled.Notifications,
+        Icons.Filled.ShoppingCart,
+        Icons.Filled.Dashboard,
+        Icons.Filled.Person
+    )
 
     NavigationBar(
         containerColor = Color.White,

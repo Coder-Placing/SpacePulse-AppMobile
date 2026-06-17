@@ -12,13 +12,11 @@ import java.io.FileOutputStream
 
 object ImgBBUploader {
 
-    // Pon tu API Key aquí
     private const val API_KEY = "e50506198b39dafe03e32e9c2a22c069"
     suspend fun uploadPhoto(context: Context, imageUri: Uri): String? {
         return try {
             val file = uriToFile(context, imageUri) ?: return null
 
-            // Usando la sintaxis moderna de OkHttp
             val mediaType = "image/*".toMediaTypeOrNull()
             val requestFile = RequestBody.create(mediaType, file)
 

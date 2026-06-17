@@ -40,14 +40,12 @@ interface WebService {
         @Header("Authorization") token: String,
         @Path("spaceId") spaceId: Long
     ): Response<List<TaskResponse>>
-    // Para eliminar la tarea
     @DELETE("api/v1/monitoring/tasks/{id}")
     suspend fun deleteWorkItem(
         @Header("Authorization") token: String,
         @Path("id") id: Long
     ): retrofit2.Response<Unit>
 
-    // Para editar el contenido de la tarea
     @PUT("api/v1/monitoring/tasks/{id}/content")
     suspend fun updateTaskContent(
         @Header("Authorization") token: String,
