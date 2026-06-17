@@ -5,6 +5,7 @@ import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
@@ -13,16 +14,20 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import coil.compose.AsyncImage
+import com.example.spacepulse.viewmodel.AuthViewModel
 import com.example.spacepulse.viewmodel.SpaceViewModel
 
 @Composable
-fun DashboardView(navController: NavController, spaceViewModel: SpaceViewModel, onTabSelected: (Int) -> Unit) {
+fun DashboardView(navController: NavController, spaceViewModel: SpaceViewModel, authViewModel: AuthViewModel, onTabSelected: (Int) -> Unit) {
     val context = LocalContext.current
     val darkBlue = Color(0xFF2C3E50)
     val lightBackground = Color(0xFFF8F9FA)
@@ -35,11 +40,12 @@ fun DashboardView(navController: NavController, spaceViewModel: SpaceViewModel, 
 
     val spaces by spaceViewModel.spaces.collectAsState()
     val notifications by spaceViewModel.notifications.collectAsState()
-
+    val userProfile by authViewModel.userProfile.collectAsState()
     LaunchedEffect(Unit) {
         if (token.isNotEmpty() && userId.isNotEmpty()) {
             spaceViewModel.fetchSpaces(token, userId)
             spaceViewModel.fetchNotifications(token)
+            authViewModel.fetchProfile(token, userId)
         }
     }
 
@@ -60,12 +66,24 @@ fun DashboardView(navController: NavController, spaceViewModel: SpaceViewModel, 
                 Text(text = "Hola, $firstName", fontSize = 28.sp, fontWeight = FontWeight.Bold, color = darkBlue)
                 Text(text = "Revisa tus espacios", fontSize = 16.sp, color = Color.Gray)
             }
-            Icon(
-                imageVector = Icons.Filled.AccountCircle,
-                contentDescription = "Perfil",
-                modifier = Modifier.size(40.dp),
-                tint = Color.LightGray
-            )
+            val photoUrl = userProfile?.photo
+            if (!photoUrl.isNullOrBlank()) {
+                AsyncImage(
+                    model = photoUrl,
+                    contentDescription = "Foto de perfil",
+                    modifier = Modifier
+                        .size(45.dp)
+                        .clip(CircleShape), // Hace la foto circular
+                    contentScale = ContentScale.Crop
+                )
+            } else {
+                Icon(
+                    imageVector = Icons.Filled.AccountCircle,
+                    contentDescription = "Perfil",
+                    modifier = Modifier.size(45.dp),
+                    tint = Color.LightGray
+                )
+            }
         }
 
         Spacer(modifier = Modifier.height(24.dp))

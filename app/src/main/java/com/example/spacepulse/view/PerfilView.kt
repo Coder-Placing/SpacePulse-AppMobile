@@ -12,15 +12,20 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.KeyboardArrowRight
 import androidx.compose.material3.*
-import androidx.compose.runtime.Composable
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import coil.compose.AsyncImage
+import coil.request.CachePolicy
+import coil.request.ImageRequest
 import com.example.spacepulse.viewmodel.AuthViewModel
 
 @Composable
@@ -29,9 +34,19 @@ fun PerfilView(navController: NavController, viewModel: AuthViewModel) {
     val darkBlue = Color(0xFF2C3E50)
     val lightBackground = Color(0xFFE5E7E9)
 
+    val userProfile by viewModel.userProfile.collectAsState()
+
     val sharedPref = context.getSharedPreferences("SpacePulsePrefs", Context.MODE_PRIVATE)
     val fullName = sharedPref.getString("USER_FULL_NAME", "Usuario") ?: "Usuario"
     val email = sharedPref.getString("USER_EMAIL", "correo@email.com") ?: "correo@email.com"
+    val token = sharedPref.getString("USER_TOKEN", "") ?: ""
+    val userId = sharedPref.getString("USER_ID", "") ?: ""
+
+    LaunchedEffect(Unit) {
+        if (token.isNotEmpty() && userId.isNotEmpty()) {
+            viewModel.fetchProfile(token, userId)
+        }
+    }
 
     Column(modifier = Modifier.fillMaxSize().padding(24.dp).verticalScroll(rememberScrollState())) {
         Text(text = "Perfil", fontSize = 28.sp, fontWeight = FontWeight.Bold, color = darkBlue)
@@ -41,9 +56,23 @@ fun PerfilView(navController: NavController, viewModel: AuthViewModel) {
 
         Card(colors = CardDefaults.cardColors(containerColor = lightBackground), shape = RoundedCornerShape(12.dp), modifier = Modifier.fillMaxWidth()) {
             Row(modifier = Modifier.padding(16.dp), verticalAlignment = Alignment.CenterVertically) {
+
                 Box(modifier = Modifier.size(60.dp).background(Color.LightGray, shape = CircleShape), contentAlignment = Alignment.Center) {
-                    Text("IMG", fontSize = 12.sp, fontWeight = FontWeight.Bold)
+                    AsyncImage(
+                        model = ImageRequest.Builder(LocalContext.current)
+                            .data(userProfile?.photo)
+                            .memoryCachePolicy(CachePolicy.DISABLED)
+                            .diskCachePolicy(CachePolicy.DISABLED)
+                            .crossfade(true)
+                            .build(),
+                        contentDescription = "Foto de perfil",
+                        modifier = Modifier
+                            .size(60.dp)
+                            .clip(CircleShape),
+                        contentScale = ContentScale.Crop
+                    )
                 }
+
                 Spacer(modifier = Modifier.width(16.dp))
                 Column {
                     Text(text = fullName, fontWeight = FontWeight.Bold, fontSize = 18.sp, color = darkBlue)

@@ -66,6 +66,8 @@ data class SpaceResponse(
     val dimensionsSquareMeters: Double?,
     val estimatedBudget: Double?,
     val currency: String?,
+
+    val images: List<String>,
     val status: String,
     val hasIot: Boolean
 )
@@ -115,4 +117,12 @@ data class UpdateTaskContentRequest(
     val title: String,
     val description: String,
     val photoUrl: String = ""
+)
+
+data class ImgBBResponse(
+    val data: ImgBBData?
+)
+
+data class ImgBBData(
+    val url: String?
 )
