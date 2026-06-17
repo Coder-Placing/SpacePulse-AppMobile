@@ -34,22 +34,15 @@ fun ClientHomeScreen(navController: NavController, viewModel: AuthViewModel, spa
                 .padding(paddingValues)
         ) {
             when (selectedItem) {
-                0 -> if (isDashboard) {
-                    DashboardView(navController, spaceViewModel) {
-                        selectedItem = it
-                        isDashboard = false
-                    }
-                } else {
-                    EspaciosView(navController, spaceViewModel)
-                }
-                1 -> MonitoreoView(navController, spaceViewModel)
-                2 -> IoTDevicesView(navController, spaceViewModel)
-                3 -> DashboardView(
+                0 -> DashboardView(
                     navController = navController,
                     spaceViewModel = spaceViewModel,
                     authViewModel = viewModel,
                     onTabSelected = { selectedItem = it }
                 )
+                1 -> EspaciosView(navController, spaceViewModel)
+                2 -> MonitoreoView(navController, spaceViewModel)
+                3 -> IoTDevicesView(navController, spaceViewModel)
                 4 -> PerfilView(navController, viewModel)
             }
         }
@@ -58,8 +51,14 @@ fun ClientHomeScreen(navController: NavController, viewModel: AuthViewModel, spa
 
 @Composable
 fun SpacePulseBottomNavigation(selectedColor: Color, selectedItem: Int, onItemSelected: (Int) -> Unit) {
-    val items = listOf("Espacios", "Alertas", "IoT", "Dashboard", "Perfil")
-    val icons = listOf(Icons.Filled.Home, Icons.Filled.Notifications, Icons.Filled.Router, Icons.Filled.Dashboard, Icons.Filled.Person)
+    val items = listOf("Home", "Espacios", "Alertas", "IoT", "Perfil")
+    val icons = listOf(
+        Icons.Filled.Home,
+        Icons.Filled.Apartment,
+        Icons.Filled.Notifications,
+        Icons.Filled.Router,
+        Icons.Filled.Person
+    )
 
     NavigationBar(
         containerColor = Color.White,
