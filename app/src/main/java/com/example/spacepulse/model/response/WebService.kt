@@ -1,6 +1,7 @@
 package com.example.spacepulse.model.response
 
 import com.example.spacepulse.model.beans.*
+import okhttp3.MultipartBody
 import retrofit2.Response
 import retrofit2.http.*
 
@@ -53,5 +54,10 @@ interface WebService {
         @Path("id") id: Long,
         @Body resource: UpdateTaskContentRequest
     ): retrofit2.Response<com.example.spacepulse.model.beans.TaskResponse>
-
+    @Multipart
+    @POST("https://api.imgbb.com/1/upload")
+    suspend fun uploadImageToImgBB(
+        @Query("key") apiKey: String,
+        @Part image: MultipartBody.Part
+    ): retrofit2.Response<com.example.spacepulse.model.beans.ImgBBResponse>
 }
