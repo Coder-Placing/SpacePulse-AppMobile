@@ -49,6 +49,7 @@ fun CrearEspacioScreen(navController: NavController, spaceViewModel: SpaceViewMo
     val currencies = listOf("PEN", "USD", "EUR")
     var currency by remember { mutableStateOf(currencies[0]) }
     var expandedCurrency by remember { mutableStateOf(false) }
+    var hasIot by remember { mutableStateOf(false) }
 
     var isLoading by remember { mutableStateOf(false) }
     var showIncompleteDialog by remember { mutableStateOf(false) }
@@ -182,6 +183,20 @@ fun CrearEspacioScreen(navController: NavController, spaceViewModel: SpaceViewMo
                     }
                 }
             }
+            Spacer(modifier = Modifier.height(16.dp))
+
+            Row(
+                modifier = Modifier.fillMaxWidth().padding(vertical = 8.dp),
+                verticalAlignment = androidx.compose.ui.Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.SpaceBetween
+            ) {
+                Text("Habilitar tecnología IoT", fontSize = 16.sp, color = darkBlue)
+                Switch(
+                    checked = hasIot,
+                    onCheckedChange = { hasIot = it },
+                    colors = SwitchDefaults.colors(checkedThumbColor = Color.White, checkedTrackColor = darkBlue)
+                )
+            }
             Spacer(modifier = Modifier.height(32.dp))
 
             Button(
@@ -199,7 +214,7 @@ fun CrearEspacioScreen(navController: NavController, spaceViewModel: SpaceViewMo
                             dimensionsSquareMeters = area.toDoubleOrNull() ?: 0.0,
                             estimatedBudget = budget.toDoubleOrNull() ?: 0.0,
                             currency = currency,
-                            hasIot = false,
+                            hasIot = hasIot,
                             images = emptyList()
                         )
 
