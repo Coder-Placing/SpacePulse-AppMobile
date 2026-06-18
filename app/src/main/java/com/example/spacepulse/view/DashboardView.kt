@@ -126,13 +126,12 @@ fun DashboardView(navController: NavController, spaceViewModel: SpaceViewModel, 
         Spacer(modifier = Modifier.height(12.dp))
 
         Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-            QuickAccessButton(title = "Pagos", modifier = Modifier.weight(1f)) { onTabSelected(2) }
-            QuickAccessButton(title = "Alertas", modifier = Modifier.weight(1f)) { onTabSelected(1) }
+            QuickAccessButton(title = "Alertas", modifier = Modifier.weight(1f)) { onTabSelected(2) }
+            QuickAccessButton(title = "Espacios", modifier = Modifier.weight(1f)) { onTabSelected(1) }
         }
         Spacer(modifier = Modifier.height(12.dp))
         Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-            QuickAccessButton(title = "Avance", modifier = Modifier.weight(1f)) { }
-            QuickAccessButton(title = "Reporte", modifier = Modifier.weight(1f)) { onTabSelected(3) }
+            QuickAccessButton(title = "Monitoreo", modifier = Modifier.weight(1f)) { onTabSelected(3) }
         }
 
         Spacer(modifier = Modifier.height(24.dp))

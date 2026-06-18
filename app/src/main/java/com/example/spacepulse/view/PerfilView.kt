@@ -105,10 +105,7 @@ fun PerfilView(navController: NavController, viewModel: AuthViewModel) {
 
         Card(shape = RoundedCornerShape(8.dp), border = BorderStroke(1.dp, Color(0xFFE0E0E0)), colors = CardDefaults.cardColors(containerColor = Color.White), modifier = Modifier.fillMaxWidth()) {
             Column {
-                Row(modifier = Modifier.fillMaxWidth().clickable { navController.navigate("metodosPago") }.padding(16.dp), horizontalArrangement = Arrangement.SpaceBetween) {
-                    Text(text = "Métodos de pago", color = darkBlue, fontSize = 16.sp)
-                    Icon(Icons.Filled.KeyboardArrowRight, contentDescription = null, tint = Color.Gray)
-                }
+
                 HorizontalDivider(color = Color(0xFFE0E0E0))
                 Row(modifier = Modifier.fillMaxWidth().clickable { navController.navigate("configuracion") }.padding(16.dp), horizontalArrangement = Arrangement.SpaceBetween) {
                     Text(text = "Configuración", color = darkBlue, fontSize = 16.sp)
