@@ -80,4 +80,16 @@ interface WebService {
         @Query("key") apiKey: String,
         @Part image: MultipartBody.Part
     ): retrofit2.Response<com.example.spacepulse.model.beans.ImgBBResponse>
+
+    @PUT("api/v1/space/{id}/cancel")
+    suspend fun cancelSpace(
+        @Header("Authorization") token: String,
+        @Path("id") spaceId: Long
+    ): Response<Unit>
+
+    @PUT("api/v1/space/{id}/complete")
+    suspend fun completeSpace(
+        @Header("Authorization") token: String,
+        @Path("id") spaceId: Long
+    ): Response<Unit>
 }

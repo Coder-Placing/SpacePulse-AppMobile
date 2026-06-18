@@ -260,7 +260,8 @@ class SpaceViewModel : ViewModel() {
                         dimensionsSquareMeters = space.dimensionsSquareMeters ?: 0.0,
                         estimatedBudget = space.estimatedBudget ?: 0.0,
                         hasIot = true,
-                        images = emptyList()
+                        images = emptyList(),
+                        status = space.status
                     )
                     val response = RetrofitClient.webService.updateSpace("Bearer $token", spaceId, request)
                     if (response.isSuccessful) {
@@ -371,6 +372,24 @@ class SpaceViewModel : ViewModel() {
 
 
 
+    }
+    fun cancelSpaceDDD(token: String, userId: String, spaceId: Long) {
+        viewModelScope.launch {
+            try {
+                // Llamamos directamente a la acción de dominio
+                val response = RetrofitClient.webService.cancelSpace("Bearer $token", spaceId)
+
+                if (response.isSuccessful) {
+                    // Si el servidor acepta la cancelación, recargamos la lista para ver los cambios
+                    fetchSpaces(token, userId)
+                    android.util.Log.d("SpaceViewModel", "Proyecto cancelado con éxito en el backend")
+                } else {
+                    android.util.Log.e("SpaceViewModel", "Error al cancelar: ${response.code()}")
+                }
+            } catch (e: Exception) {
+                android.util.Log.e("SpaceViewModel", "Fallo al cancelar: ${e.message}")
+            }
+        }
     }
 }
 

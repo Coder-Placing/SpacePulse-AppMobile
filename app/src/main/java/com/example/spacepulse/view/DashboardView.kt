@@ -73,7 +73,7 @@ fun DashboardView(navController: NavController, spaceViewModel: SpaceViewModel, 
                     contentDescription = "Foto de perfil",
                     modifier = Modifier
                         .size(45.dp)
-                        .clip(CircleShape), // Hace la foto circular
+                        .clip(CircleShape),
                     contentScale = ContentScale.Crop
                 )
             } else {

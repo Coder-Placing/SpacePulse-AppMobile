@@ -94,7 +94,8 @@ data class UpdateSpaceRequest(
     val dimensionsSquareMeters: Double,
     val estimatedBudget: Double,
     val hasIot: Boolean,
-    val images: List<String>
+    val images: List<String>,
+    val status: String? = null
 )
 
 data class IoTDeviceResponse(

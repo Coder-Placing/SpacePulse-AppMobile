@@ -34,6 +34,7 @@ fun DetalleEspacioScreen(navController: NavController, spaceViewModel: SpaceView
     val space = spaces.find { it.id == spaceId }
     var showMenu by remember { mutableStateOf(false) }
     var showDeleteDialog by remember { mutableStateOf(false) }
+    var showCompletedAlert by remember { mutableStateOf(false) } // <--- Variable para la nueva alerta
 
     val deleteState by spaceViewModel.deleteSpaceState.collectAsState()
 
@@ -88,6 +89,26 @@ fun DetalleEspacioScreen(navController: NavController, spaceViewModel: SpaceView
         )
     }
 
+    if (showCompletedAlert) {
+        AlertDialog(
+            onDismissRequest = { showCompletedAlert = false },
+            title = { Text("Aprobación Requerida", fontWeight = FontWeight.Bold, fontSize = 20.sp, color = darkBlue) },
+            text = { Text("Para cambiar el estado a completado, este proyecto primero tiene que ser aprobado por el remodelador.", color = Color.Gray, fontSize = 16.sp) },
+            confirmButton = {
+                Button(
+                    onClick = { showCompletedAlert = false },
+                    modifier = Modifier.fillMaxWidth().height(48.dp),
+                    shape = RoundedCornerShape(8.dp),
+                    colors = ButtonDefaults.buttonColors(containerColor = darkBlue)
+                ) {
+                    Text("Entendido", color = Color.White)
+                }
+            },
+            containerColor = Color.White,
+            shape = RoundedCornerShape(16.dp)
+        )
+    }
+
     Scaffold(
         topBar = {
             TopAppBar(
@@ -107,6 +128,21 @@ fun DetalleEspacioScreen(navController: NavController, spaceViewModel: SpaceView
                             onDismissRequest = { showMenu = false },
                             modifier = Modifier.background(Color.White)
                         ) {
+                            DropdownMenuItem(
+                                text = { Text("Marcar como Completado", color = darkBlue) },
+                                onClick = {
+                                    showMenu = false
+                                    showCompletedAlert = true
+                                }
+                            )
+                            DropdownMenuItem(
+                                text = { Text("Cancelar Espacio", color = darkBlue) },
+                                onClick = {
+                                    showMenu = false
+                                    spaceViewModel.cancelSpaceDDD(token, userId, spaceId)
+                                    navController.popBackStack()
+                                }
+                            )
                             DropdownMenuItem(
                                 text = { Text("Eliminar", color = Color.Red) },
                                 onClick = {
@@ -166,19 +202,12 @@ fun DetalleEspacioScreen(navController: NavController, spaceViewModel: SpaceView
             Spacer(modifier = Modifier.height(12.dp))
 
             Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-                OutlinedButton(onClick = { }, modifier = Modifier.weight(1f).height(80.dp), shape = RoundedCornerShape(8.dp), border = BorderStroke(1.dp, Color(0xFFE0E0E0))) {
-                    Text("Avance", color = darkBlue, fontWeight = FontWeight.Bold)
-                }
+
                 OutlinedButton(onClick = { navController.navigate("monitoreoEspacio/$spaceId") }, modifier = Modifier.weight(1f).height(80.dp), shape = RoundedCornerShape(8.dp), border = BorderStroke(1.dp, Color(0xFFE0E0E0))) {
                     Text("Monitoreo", color = darkBlue, fontWeight = FontWeight.Bold)
                 }
             }
-            Spacer(modifier = Modifier.height(12.dp))
-            OutlinedButton(onClick = { }, modifier = Modifier.fillMaxWidth().height(80.dp), shape = RoundedCornerShape(8.dp), border = BorderStroke(1.dp, Color(0xFFE0E0E0))) {
-                Text("Reportes", color = darkBlue, fontWeight = FontWeight.Bold)
-            }
 
-            // --- ¡AQUÍ ESTÁ SU LUGAR CORRECTO! DENTRO DE LA COLUMNA PRINCIPAL ---
             Spacer(modifier = Modifier.height(32.dp))
             Button(
                 onClick = {
