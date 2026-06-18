@@ -130,7 +130,12 @@ data class UpdateIoTDeviceRequest(
 )
 
 data class NotificationResponse(
-    val id: Long?
+    val id: Long? = null,
+    val spaceId: Long? = null,
+    val title: String? = null,
+    val message: String? = null,
+    val isRead: Boolean? = null,
+    val createdAt: String? = null
 )
 
 data class TaskRequest(

@@ -173,6 +173,38 @@ class SpaceViewModel : ViewModel() {
         }
     }
 
+    fun markNotificationAsRead(token: String, notificationId: Long, onComplete: () -> Unit = {}) {
+        viewModelScope.launch {
+            try {
+                val response = RetrofitClient.webService.markNotificationAsRead(
+                    "Bearer $token",
+                    notificationId
+                )
+
+                if (response.isSuccessful) {
+                    _notifications.value = _notifications.value.map { notification ->
+                        if (notification.id == notificationId) {
+                            notification.copy(isRead = true)
+                        } else {
+                            notification
+                        }
+                    }
+                } else {
+                    android.util.Log.e(
+                        "NOTIFICATIONS",
+                        "Error al marcar como leída: ${response.code()}"
+                    )
+                }
+            } catch (e: Exception) {
+                android.util.Log.e(
+                    "NOTIFICATIONS",
+                    "Fallo al marcar como leída: ${e.message}"
+                )
+            } finally {
+                onComplete()
+            }
+        }
+    }
     fun createSpace(context: Context, imageUri: Uri?, token: String, userId: String, request: CreateSpaceRequest) {
         viewModelScope.launch {
             try {

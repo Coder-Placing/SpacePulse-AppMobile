@@ -50,6 +50,10 @@ interface WebService {
 
     @GET("api/v1/monitoring/notifications/user")
     suspend fun getUserNotifications(@Header("Authorization") token: String): Response<List<NotificationResponse>>
+
+    @PUT("api/v1/monitoring/notifications/{id}/read")
+    suspend fun markNotificationAsRead(@Header("Authorization") token: String, @Path("id") id: Long): Response<Unit>
+
     @POST("api/v1/monitoring/tasks/request")
     suspend fun requestTask(@Header("Authorization") token: String, @Body request: com.example.spacepulse.model.beans.TaskRequest): retrofit2.Response<com.example.spacepulse.model.beans.TaskResponse>
 
