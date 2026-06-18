@@ -44,7 +44,7 @@ fun ClientHomeScreen(navController: NavController, viewModel: AuthViewModel, spa
                 } else {
                     EspaciosView(navController, spaceViewModel)
                 }
-                1 -> MonitoreoView(spaceViewModel)
+                1 -> MonitoreoView(navController, spaceViewModel)
                 2 -> PagosView()
                 3 -> ReportesView()
                 4 -> PerfilView(navController, viewModel)

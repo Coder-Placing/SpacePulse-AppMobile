@@ -48,6 +48,10 @@ fun AppNavigation() {
             val spaceId = backStackEntry.arguments?.getString("spaceId")?.toLongOrNull() ?: 0L
             MonitoreoEspacioScreen(navController = navController, spaceViewModel = spaceViewModel, spaceId = spaceId)
         }
+        composable("detalleAlerta/{notificationId}") { backStackEntry ->
+            val notificationId = backStackEntry.arguments?.getString("notificationId")?.toLongOrNull() ?: 0L
+            DetalleAlertaScreen(navController = navController, spaceViewModel = spaceViewModel, notificationId = notificationId)
+        }
         composable("solicitarTarea/{spaceId}") { backStackEntry ->
             val id = backStackEntry.arguments?.getString("spaceId")?.toLongOrNull() ?: 0L
             com.example.spacepulse.view.SolicitarTareaScreen(
