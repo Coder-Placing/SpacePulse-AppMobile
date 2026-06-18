@@ -51,6 +51,13 @@ fun AppNavigation() {
         composable("detalleAlerta/{notificationId}") { backStackEntry ->
             val notificationId = backStackEntry.arguments?.getString("notificationId")?.toLongOrNull() ?: 0L
             DetalleAlertaScreen(navController = navController, spaceViewModel = spaceViewModel, notificationId = notificationId)
+        composable("agregarIoTDevice/{spaceId}") { backStackEntry ->
+            val spaceId = backStackEntry.arguments?.getString("spaceId")?.toLongOrNull() ?: 0L
+            AgregarIoTDeviceScreen(navController = navController, spaceViewModel = spaceViewModel, spaceId = spaceId)
+        }
+        composable("detalleIoTDevice/{deviceId}") { backStackEntry ->
+            val deviceId = backStackEntry.arguments?.getString("deviceId")?.toLongOrNull() ?: 0L
+            DetalleIoTDeviceScreen(navController = navController, spaceViewModel = spaceViewModel, deviceId = deviceId)
         }
         composable("solicitarTarea/{spaceId}") { backStackEntry ->
             val id = backStackEntry.arguments?.getString("spaceId")?.toLongOrNull() ?: 0L
@@ -62,7 +69,6 @@ fun AppNavigation() {
         }
 
         composable("tareasEspacio/{spaceId}") { backStackEntry ->
-            // Lo extraemos como Long para que encaje perfecto
             val spaceId = backStackEntry.arguments?.getString("spaceId")?.toLongOrNull() ?: 0L
 
             TareasEspacioScreen(

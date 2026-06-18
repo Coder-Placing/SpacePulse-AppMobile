@@ -1,6 +1,7 @@
 package com.example.spacepulse.model.response
 
 import com.example.spacepulse.model.beans.*
+import okhttp3.MultipartBody
 import retrofit2.Response
 import retrofit2.http.*
 
@@ -26,8 +27,26 @@ interface WebService {
     @DELETE("api/v1/space/{id}")
     suspend fun deleteSpace(@Header("Authorization") token: String, @Path("id") id: Long): Response<Unit>
 
-    @GET("api/v1/monitoring/io-t-devices/space/{spaceId}")
+    @PUT("api/v1/space/{id}")
+    suspend fun updateSpace(@Header("Authorization") token: String, @Path("id") id: Long, @Body request: UpdateSpaceRequest): Response<SpaceResponse>
+
+    @GET("api/v1/monitoring/readings/space/{spaceId}")
     suspend fun getIoTDevicesBySpace(@Header("Authorization") token: String, @Path("spaceId") spaceId: Long): Response<List<IoTDeviceResponse>>
+
+    @POST("api/v1/monitoring/io-t-devices")
+    suspend fun addIoTDevice(@Header("Authorization") token: String, @Body request: CreateIoTDeviceRequest): Response<IoTDeviceResponse>
+
+    @PUT("api/v1/monitoring/io-t-devices/{deviceId}")
+    suspend fun updateIoTDevice(@Header("Authorization") token: String, @Path("deviceId") deviceId: Long, @Body request: UpdateIoTDeviceRequest): Response<IoTDeviceResponse>
+
+    @PUT("api/v1/monitoring/io-t-devices/{deviceId}/toggle")
+    suspend fun toggleIoTDevice(@Header("Authorization") token: String, @Path("deviceId") deviceId: Long): Response<Unit>
+
+    @GET("api/v1/monitoring/io-t-devices/my-devices")
+    suspend fun getMyIoTDevices(@Header("Authorization") token: String): Response<List<IoTDeviceResponse>>
+
+    @DELETE("api/v1/monitoring/io-t-devices/{id}")
+    suspend fun deleteIoTDevice(@Header("Authorization") token: String, @Path("id") id: Long): Response<Unit>
 
     @GET("api/v1/monitoring/notifications/user")
     suspend fun getUserNotifications(@Header("Authorization") token: String): Response<List<NotificationResponse>>
@@ -43,19 +62,22 @@ interface WebService {
         @Header("Authorization") token: String,
         @Path("spaceId") spaceId: Long
     ): Response<List<TaskResponse>>
-    // Para eliminar la tarea
     @DELETE("api/v1/monitoring/tasks/{id}")
     suspend fun deleteWorkItem(
         @Header("Authorization") token: String,
         @Path("id") id: Long
     ): retrofit2.Response<Unit>
 
-    // Para editar el contenido de la tarea
     @PUT("api/v1/monitoring/tasks/{id}/content")
     suspend fun updateTaskContent(
         @Header("Authorization") token: String,
         @Path("id") id: Long,
         @Body resource: UpdateTaskContentRequest
     ): retrofit2.Response<com.example.spacepulse.model.beans.TaskResponse>
-
+    @Multipart
+    @POST("https://api.imgbb.com/1/upload")
+    suspend fun uploadImageToImgBB(
+        @Query("key") apiKey: String,
+        @Part image: MultipartBody.Part
+    ): retrofit2.Response<com.example.spacepulse.model.beans.ImgBBResponse>
 }

@@ -1,6 +1,10 @@
 package com.example.spacepulse.view
 
 import android.content.Context
+import android.net.Uri
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.PickVisualMediaRequest
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
@@ -22,7 +26,14 @@ import com.example.spacepulse.viewmodel.SpaceViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
+
 fun CrearEspacioScreen(navController: NavController, spaceViewModel: SpaceViewModel) {
+    var selectedImageUri by remember { mutableStateOf<Uri?>(null) }
+    val galleryLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.PickVisualMedia()
+    ) { uri ->
+        selectedImageUri = uri
+    }
     val context = LocalContext.current
     val darkBlue = Color(0xFF2C3E50)
     val sharedPref = context.getSharedPreferences("SpacePulsePrefs", Context.MODE_PRIVATE)
@@ -38,6 +49,7 @@ fun CrearEspacioScreen(navController: NavController, spaceViewModel: SpaceViewMo
     val currencies = listOf("PEN", "USD", "EUR")
     var currency by remember { mutableStateOf(currencies[0]) }
     var expandedCurrency by remember { mutableStateOf(false) }
+    var hasIot by remember { mutableStateOf(false) }
 
     var isLoading by remember { mutableStateOf(false) }
     var showIncompleteDialog by remember { mutableStateOf(false) }
@@ -96,6 +108,13 @@ fun CrearEspacioScreen(navController: NavController, spaceViewModel: SpaceViewMo
                 .verticalScroll(rememberScrollState())
         ) {
             Text(text = "Datos principales", fontSize = 16.sp, color = Color.Gray)
+            Button(
+                onClick = { galleryLauncher.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly)) },
+                modifier = Modifier.fillMaxWidth().padding(bottom = 16.dp),
+                colors = ButtonDefaults.buttonColors(containerColor = if (selectedImageUri != null) Color(0xFF4CAF50) else darkBlue)
+            ) {
+                Text(if (selectedImageUri != null) "¡Foto del espacio seleccionada! ✓" else "Añadir foto del espacio")
+            }
             Spacer(modifier = Modifier.height(16.dp))
 
             OutlinedTextField(
@@ -164,6 +183,20 @@ fun CrearEspacioScreen(navController: NavController, spaceViewModel: SpaceViewMo
                     }
                 }
             }
+            Spacer(modifier = Modifier.height(16.dp))
+
+            Row(
+                modifier = Modifier.fillMaxWidth().padding(vertical = 8.dp),
+                verticalAlignment = androidx.compose.ui.Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.SpaceBetween
+            ) {
+                Text("Habilitar tecnología IoT", fontSize = 16.sp, color = darkBlue)
+                Switch(
+                    checked = hasIot,
+                    onCheckedChange = { hasIot = it },
+                    colors = SwitchDefaults.colors(checkedThumbColor = Color.White, checkedTrackColor = darkBlue)
+                )
+            }
             Spacer(modifier = Modifier.height(32.dp))
 
             Button(
@@ -181,10 +214,17 @@ fun CrearEspacioScreen(navController: NavController, spaceViewModel: SpaceViewMo
                             dimensionsSquareMeters = area.toDoubleOrNull() ?: 0.0,
                             estimatedBudget = budget.toDoubleOrNull() ?: 0.0,
                             currency = currency,
-                            hasIot = false,
+                            hasIot = hasIot,
                             images = emptyList()
                         )
-                        spaceViewModel.createSpace(token, userId, request)
+
+                        spaceViewModel.createSpace(
+                            context = context,
+                            imageUri = selectedImageUri,
+                            token = token,
+                            userId = userId,
+                            request = request
+                        )
                     }
                 },
                 modifier = Modifier.fillMaxWidth().height(54.dp),

@@ -142,7 +142,6 @@ fun TaskCard(task: TaskResponse, viewModel: SpaceViewModel, token: String, space
                     Icon(Icons.Default.Edit, contentDescription = "Editar", tint = Color.Gray)
                 }
                 IconButton(onClick = {
-                    // Ejecuta el DELETE pasando el id numérico de la tarea
                     viewModel.deleteModelTask(token, task.id, spaceId)
                 }) {
                     Icon(Icons.Default.Delete, contentDescription = "Eliminar", tint = Color.Red.copy(alpha = 0.6f))
@@ -151,7 +150,6 @@ fun TaskCard(task: TaskResponse, viewModel: SpaceViewModel, token: String, space
         }
     }
 
-    // Cuadro de diálogo emergente para editar los textos de la solicitud
     if (showEditDialog) {
         var editTitle by remember { mutableStateOf(task.title ?: "") }
         var editDescription by remember { mutableStateOf(task.description ?: "") }

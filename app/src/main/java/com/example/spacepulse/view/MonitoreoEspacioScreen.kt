@@ -3,12 +3,15 @@ package com.example.spacepulse.view
 import android.content.Context
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Router
 import androidx.compose.material.icons.filled.WifiTethering
@@ -32,6 +35,7 @@ fun MonitoreoEspacioScreen(navController: NavController, spaceViewModel: SpaceVi
     val context = LocalContext.current
     val sharedPref = context.getSharedPreferences("SpacePulsePrefs", Context.MODE_PRIVATE)
     val token = sharedPref.getString("USER_TOKEN", "") ?: ""
+    val userId = sharedPref.getString("USER_ID", "") ?: ""
 
     val iotDevices by spaceViewModel.iotDevices.collectAsState()
     val spaces by spaceViewModel.spaces.collectAsState()
@@ -57,6 +61,13 @@ fun MonitoreoEspacioScreen(navController: NavController, spaceViewModel: SpaceVi
                         Icon(Icons.Filled.ArrowBack, contentDescription = "Volver", tint = darkBlue)
                     }
                 },
+                actions = {
+                    if (iotDevices.isNotEmpty()) {
+                        IconButton(onClick = { navController.navigate("agregarIoTDevice/$spaceId") }) {
+                            Icon(Icons.Filled.Add, contentDescription = "Agregar", tint = darkBlue)
+                        }
+                    }
+                },
                 colors = TopAppBarDefaults.topAppBarColors(containerColor = Color.Transparent)
             )
         },
@@ -80,20 +91,38 @@ fun MonitoreoEspacioScreen(navController: NavController, spaceViewModel: SpaceVi
                 Spacer(modifier = Modifier.height(24.dp))
                 Text(text = "Monitoreo no disponible", fontSize = 20.sp, fontWeight = FontWeight.Bold, color = darkBlue)
                 Spacer(modifier = Modifier.height(12.dp))
-                Text(
-                    text = "Este espacio aún no tiene sensores\nactivos",
-                    fontSize = 16.sp,
-                    color = Color.Gray,
-                    textAlign = TextAlign.Center
-                )
-                Spacer(modifier = Modifier.height(32.dp))
-                Button(
-                    onClick = { },
-                    modifier = Modifier.fillMaxWidth().height(54.dp),
-                    shape = RoundedCornerShape(8.dp),
-                    colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFD3A076))
-                ) {
-                    Text("Solicitar monitoreo", fontSize = 18.sp, color = Color.White)
+                if (space?.hasIot == true) {
+                    Text(
+                        text = "Este espacio aún no tiene sensores\nactivos",
+                        fontSize = 16.sp,
+                        color = Color.Gray,
+                        textAlign = TextAlign.Center
+                    )
+                    Spacer(modifier = Modifier.height(32.dp))
+                    Button(
+                        onClick = { navController.navigate("agregarIoTDevice/$spaceId") },
+                        modifier = Modifier.fillMaxWidth().height(54.dp),
+                        shape = RoundedCornerShape(8.dp),
+                        colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFD3A076))
+                    ) {
+                        Text("Agregar dispositivo", fontSize = 18.sp, color = Color.White)
+                    }
+                } else {
+                    Text(
+                        text = "La tecnología IoT está desactivada\npara este espacio",
+                        fontSize = 16.sp,
+                        color = Color.Gray,
+                        textAlign = TextAlign.Center
+                    )
+                    Spacer(modifier = Modifier.height(32.dp))
+                    Button(
+                        onClick = { spaceViewModel.enableIotForSpace(token, userId, spaceId) },
+                        modifier = Modifier.fillMaxWidth().height(54.dp),
+                        shape = RoundedCornerShape(8.dp),
+                        colors = ButtonDefaults.buttonColors(containerColor = darkBlue)
+                    ) {
+                        Text("Activar Tecnología IoT", fontSize = 18.sp, color = Color.White)
+                    }
                 }
             }
         } else {
@@ -125,7 +154,10 @@ fun MonitoreoEspacioScreen(navController: NavController, spaceViewModel: SpaceVi
                             shape = RoundedCornerShape(8.dp),
                             border = BorderStroke(1.dp, Color(0xFFE0E0E0)),
                             colors = CardDefaults.cardColors(containerColor = Color.White),
-                            modifier = Modifier.fillMaxWidth().padding(bottom = 12.dp)
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(bottom = 12.dp)
+                                .clickable { navController.navigate("detalleIoTDevice/${device.id}") }
                         ) {
                             Row(
                                 modifier = Modifier.padding(16.dp),

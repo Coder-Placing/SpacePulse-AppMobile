@@ -2,15 +2,18 @@ package com.example.spacepulse.view
 
 import android.content.Context
 import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Notifications
 import androidx.compose.material.icons.filled.NotificationsNone
 import androidx.compose.material.icons.filled.Search
+import androidx.compose.material.icons.filled.Router
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -37,6 +40,7 @@ fun MonitoreoView(navController: NavController, spaceViewModel: SpaceViewModel) 
     val token = sharedPref.getString("USER_TOKEN", "") ?: ""
 
     val notifications by spaceViewModel.notifications.collectAsState()
+    val myDevices by spaceViewModel.myIoTDevices.collectAsState()
 
     var searchText by remember { mutableStateOf("") }
     var selectedFilter by remember { mutableStateOf("Todas") }

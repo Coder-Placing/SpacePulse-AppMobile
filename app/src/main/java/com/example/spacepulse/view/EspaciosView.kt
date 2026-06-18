@@ -17,13 +17,16 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import coil.compose.AsyncImage
 import com.example.spacepulse.viewmodel.SpaceViewModel
 
 @Composable
@@ -137,6 +140,27 @@ fun EspaciosView(navController: NavController, spaceViewModel: SpaceViewModel) {
                             Spacer(modifier = Modifier.height(8.dp))
                             Text(text = space.location, color = Color.Gray, fontSize = 14.sp)
                             Spacer(modifier = Modifier.height(8.dp))
+                            AsyncImage(
+                                model = space.images.firstOrNull()?.ifBlank { null },
+                                contentDescription = "Imagen del espacio",
+                                modifier = Modifier
+                                    .size(200.dp)
+                                    .clip(RoundedCornerShape(8.dp)),
+                                contentScale = ContentScale.Crop,
+                                alignment = Alignment.Center,
+                                onLoading = {
+                                    android.util.Log.d("IMG_DEBUG", "Cargando...")
+                                },
+                                onSuccess = {
+                                    android.util.Log.d("IMG_DEBUG", "¡Éxito!")
+                                },
+                                onError = { error ->
+                                    android.util.Log.e(
+                                        "IMG_DEBUG",
+                                        "Error cargando: ${error.result.throwable.message}"
+                                    )
+                                }
+                            )
                             Text(text = space.status, color = Color.Gray, fontSize = 14.sp)
                         }
                     }
