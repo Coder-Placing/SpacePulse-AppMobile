@@ -10,8 +10,7 @@ interface WebService {
     suspend fun login(@Body request: LoginRequest): Response<LoginResponse>
 
     @POST("api/users/register")
-    suspend fun register(@Body request: RegisterRequest): Response<RegisterResponse>
-
+    suspend fun register(@Body request: RegisterRequest): Response<Unit>
     @GET("api/users/{userId}")
     suspend fun getUserProfile(@Header("Authorization") token: String, @Path("userId") userId: String): Response<UserProfileResponse>
 
